@@ -212,23 +212,31 @@ export function manifestPathFor(sourcePath) {
   return null;
 }
 
+// 从候选里挑默认源文本：优先不含汉字的候选（汉字值通常是我们自己写入的覆盖层），
+// 全部含汉字时（本身就是中文源的插件）才回退到第一个非空候选。
+function pickDefault(candidates) {
+  const nonEmpty = candidates.map((value) => stringValue(value)).filter((value) => value.trim());
+  const nonHan = nonEmpty.find((value) => !hasHan(value));
+  return nonHan !== undefined ? nonHan : nonEmpty[0] || "";
+}
+
 export function sourceDefaults(obj, plugin) {
   const iface = isObject(obj.interface) ? obj.interface : {};
   const description = stringValue(obj.description);
   return {
-    displayName: firstNonEmpty(iface.displayName, obj.displayName, obj.name, plugin.pluginName),
-    shortDescription: firstNonEmpty(
+    displayName: pickDefault([iface.displayName, obj.displayName, obj.name, plugin.pluginName]),
+    shortDescription: pickDefault([
       iface.shortDescription,
       description,
       iface.longDescription,
       obj.displayName,
-    ),
-    longDescription: firstNonEmpty(
+    ]),
+    longDescription: pickDefault([
       iface.longDescription,
       description,
       iface.shortDescription,
       obj.displayName,
-    ),
+    ]),
   };
 }
 
@@ -400,6 +408,13 @@ export function applyFields(manifest, fields) {
   if (!isObject(obj.interface)) obj.interface = {};
   const changed = [];
   for (const { field, value } of fields) {
+    if (value === null || value === undefined) {
+      if (Object.prototype.hasOwnProperty.call(obj.interface, field)) {
+        delete obj.interface[field];
+        changed.push(field);
+      }
+      continue;
+    }
     if (obj.interface[field] === value) continue;
     obj.interface[field] = value;
     changed.push(field);
@@ -414,13 +429,37 @@ export function writeManifest(manifestPath, text) {
 
 export function shouldRefreshField(previous, raw, defaults, field) {
   if (!previous) {
-    const source = raw !== null ? raw : defaults[field] || "";
+    const rawIsHan = raw !== null && hasHan(raw);
+    const fallback = defaults[field] || "";
+    // 清单值含汉字时优先使用不含汉字的默认值，避免把上一次的中文覆盖当成源文本；
+    // 只有整个清单都是中文（本身就是中文源的插件）才把汉字当作源文本。
+    if (raw !== null && !rawIsHan) {
+      return {
+        source: raw,
+        sourceHash: sha256(raw),
+        originalPresent: true,
+        originalValue: raw,
+        changed: true,
+      };
+    }
+    if (fallback && !hasHan(fallback)) {
+      return {
+        source: fallback,
+        sourceHash: sha256(fallback),
+        originalPresent: false,
+        originalValue: null,
+        changed: true,
+        staleOverlay: rawIsHan,
+      };
+    }
+    const source = raw !== null ? raw : fallback;
     return {
       source,
       sourceHash: sha256(source),
       originalPresent: raw !== null,
       originalValue: raw,
       changed: true,
+      chineseSource: hasHan(source),
     };
   }
 
@@ -446,7 +485,7 @@ export function shouldRefreshField(previous, raw, defaults, field) {
 
   if (raw === null) {
     const fallback = defaults[field] || "";
-    if (fallback && fallback !== previous.source) {
+    if (fallback && fallback !== previous.source && !hasHan(fallback)) {
       return {
         source: fallback,
         sourceHash: sha256(fallback),
@@ -461,6 +500,29 @@ export function shouldRefreshField(previous, raw, defaults, field) {
       originalPresent: previous.originalPresent === true,
       originalValue: previous.originalValue ?? null,
       changed: false,
+    };
+  }
+
+  if (hasHan(raw)) {
+    // 汉字值只可能来自本插件的覆盖层或中文源插件，永远不是“外部修改”。
+    if (previous.source && hasHan(previous.source)) {
+      // 中文源插件：作者更新了中文文案，跟随更新源文本。
+      return {
+        source: raw,
+        sourceHash: sha256(raw),
+        originalPresent: true,
+        originalValue: raw,
+        changed: raw !== previous.source,
+        chineseSource: true,
+      };
+    }
+    return {
+      source: previous.source,
+      sourceHash: previous.sourceHash,
+      originalPresent: previous.originalPresent === true,
+      originalValue: previous.originalValue ?? null,
+      changed: false,
+      staleOverlay: true,
     };
   }
 

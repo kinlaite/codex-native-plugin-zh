@@ -11,6 +11,18 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd.exe /d /s /c call \"${PLUGIN_ROOT}\\scripts\\run_hook.cmd\" SessionEnd",
+            "timeout": 30,
+            "statusMessage": "正在检查是否需要恢复英文"
+          }
+        ]
+      }
     ]
   }
 }

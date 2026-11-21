@@ -1,7 +1,7 @@
 {
   "name": "native-plugin-zh-local",
   "interface": {
-    "displayName": "原生插件中文化（本地）"
+    "displayName": "原生插件中文化"
   },
   "plugins": [
     {
@@ -9,18 +9,6 @@
       "source": {
         "source": "local",
         "path": "./plugins/native-plugin-zh"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "native-plugin-zh-guard",
-      "source": {
-        "source": "local",
-        "path": "./plugins/native-plugin-zh-guard"
       },
       "policy": {
         "installation": "AVAILABLE",

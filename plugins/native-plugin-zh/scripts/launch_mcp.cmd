@@ -28,5 +28,5 @@ if not errorlevel 1 (
   exit /b
 )
 
-echo native-plugin-zh: 找不到 Node 运行时。 1>&2
+echo native-plugin-zh: node runtime not found 1>&2
 exit /b 127

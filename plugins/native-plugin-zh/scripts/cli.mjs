@@ -6,6 +6,7 @@ import {
   diagnose,
   purgeDataAfterRestore,
 } from "../lib/maintenance.mjs";
+import { removeRestoreServerRegistration } from "../lib/registration.mjs";
 import { cleanupLegacyResidue } from "../lib/migration.mjs";
 import {
   restoreOriginals,
@@ -95,6 +96,7 @@ async function main() {
       reason: "uninstall",
       trigger: "cli",
     });
+    removeRestoreServerRegistration();
     const purgeResult = purgeDataAfterRestore(restored, {
       purge: flags.has("purge"),
     });

@@ -1,9 +1,12 @@
 {
   "name": "codex-native-plugin-zh-runtime",
-  "version": "1.2.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
-  "description": "Self-contained, lifecycle-scoped, reversible native Codex plugin UI localization.",
+  "description": "Windows-only reversible localization for the native Codex plugin UI.",
+  "os": [
+    "win32"
+  ],
   "scripts": {
     "start": "node server.mjs",
     "cli": "node scripts/cli.mjs",

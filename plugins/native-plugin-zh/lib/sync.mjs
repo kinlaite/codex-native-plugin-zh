@@ -110,14 +110,28 @@ function applyCachedUnlocked({
       const fieldsToWrite = [];
       for (const field of FIELDS) {
         const previous = entry.fields?.[field];
+        if (!previous) continue;
         const raw = currentFieldValue(manifest.obj, field);
-        if (previous?.translation && raw === previous.translation) {
+        if (previous.translation && raw === previous.translation) {
           alreadyChineseFields += 1;
           active = true;
           continue;
         }
         if (canApplyCachedValue(previous, raw)) {
           fieldsToWrite.push({ field, value: previous.translation });
+          continue;
+        }
+        // 清单里残留旧版/未知的中文覆盖（Codex 重新物化、译文换版或旧代码写入）：
+        // 一律校正为缓存译文；没有译文时回到英文原值，原清单没有的字段则删除。
+        if (raw !== null && hasHan(raw)) {
+          active = true;
+          if (previous.translation) {
+            fieldsToWrite.push({ field, value: previous.translation });
+          } else if (previous.originalPresent === true && previous.originalValue) {
+            fieldsToWrite.push({ field, value: previous.originalValue });
+          } else {
+            fieldsToWrite.push({ field, value: null });
+          }
         }
       }
       if (!fieldsToWrite.length) continue;
@@ -301,7 +315,17 @@ export async function syncInstalled({
         }
 
         entry.fields[field] = next;
-        if (next.translation && next.translation !== raw) {
+        if (refreshed.staleOverlay) {
+          // 清单里是旧版/未知的中文覆盖：校正为缓存译文；
+          // 没有译文时回到英文原值，原清单没有的字段则删除。
+          if (next.translation && next.translation !== raw) {
+            fieldsToWrite.push({ field, value: next.translation });
+          } else if (!next.translation && next.originalPresent === true && next.originalValue) {
+            fieldsToWrite.push({ field, value: next.originalValue });
+          } else if (!next.translation && next.originalPresent === false && raw !== null) {
+            fieldsToWrite.push({ field, value: null });
+          }
+        } else if (next.translation && next.translation !== raw) {
           fieldsToWrite.push({ field, value: next.translation });
         }
       }
@@ -736,24 +760,15 @@ export async function syncWithTranslation(options = {}) {
   return result;
 }
 
-function shouldSkipRestore(previous, raw) {
-  if (previous.translation !== null) {
-    if (raw === previous.translation) return false;
-    if (previous.originalPresent) {
-      return (
-        raw === null ||
-        (raw !== previous.originalValue && raw !== previous.source)
-      );
-    }
-    return raw !== null;
-  }
-  if (previous.originalPresent) {
-    return (
-      raw === null ||
-      (raw !== previous.originalValue && raw !== previous.source)
-    );
-  }
-  return raw !== null;
+// 恢复冲突判定：只有真正的外部编辑才跳过。
+// 中文覆盖层（无论是否与缓存译文一致）都必须恢复英文——旧版代码、译文换版或
+// Codex 重新物化都可能导致清单中文与状态缓存不一致，这正是历史上 164 个
+// “冲突”让关闭后无法恢复英文的根因。
+function isRestoreConflict(previous, raw) {
+  if (raw === null) return previous.originalPresent === true;
+  if (raw === previous.originalValue) return false;
+  if (hasHan(raw)) return false;
+  return raw !== previous.source;
 }
 
 function restoreOriginalsUnlocked({
@@ -824,7 +839,7 @@ function restoreOriginalsUnlocked({
         const previous = entry.fields?.[field];
         if (!previous) continue;
         const raw = currentFieldValue(obj, field);
-        if (!force && shouldSkipRestore(previous, raw)) {
+        if (!force && isRestoreConflict(previous, raw)) {
           conflicts.push({ key: entry.key, field, current: raw });
           continue;
         }

@@ -6,7 +6,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-export const APP_VERSION = "1.2.0";
+export const APP_VERSION = "1.5.0";
 export const APP_ID = "native-plugin-zh";
 export const LOCALE = "zh-CN";
 export const PLUGIN_ID = "native-plugin-zh@native-plugin-zh-local";

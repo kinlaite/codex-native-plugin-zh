@@ -98,16 +98,6 @@ export function listPluginConfigStates(text, predicate = () => true) {
   return entries;
 }
 
-export function readGuardConfigStates() {
-  let text = "";
-  try {
-    text = fs.readFileSync(CONFIG_FILE, "utf8");
-  } catch {}
-  return listPluginConfigStates(text, (pluginId) =>
-    pluginId.startsWith("native-plugin-zh-guard@"),
-  );
-}
-
 export function appendHistory(record) {
   try {
     ensureDirs();

@@ -1,9 +1,9 @@
 {
   "name": "native-plugin-zh",
-  "version": "1.2.0",
-  "description": "在 Codex 原生插件界面中直接显示中文名称和介绍；启用或关闭插件后重启 Codex 即可切换中文与英文。",
+  "version": "1.5.0",
+  "description": "Windows 版 Codex 原生插件界面中文化：启用写入中文，关闭恢复英文，并通过无控制台窗口的独立助手自动重启 Codex。",
   "author": {
-    "name": "Local"
+    "name": "kinlaite"
   },
   "license": "MIT",
   "keywords": [
@@ -11,7 +11,8 @@
     "zh-cn",
     "localization",
     "plugin-catalog",
-    "manifest-overlay"
+    "manifest-overlay",
+    "windows"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
@@ -20,15 +21,16 @@
     "displayName": "原生插件中文化",
     "shortDescription": "直接替换 Codex 插件界面的英文介绍",
     "longDescription": "通过可恢复的本地清单覆盖层，把 Codex 原生插件市场、已安装列表和详情页中的英文名称、简介与详细说明替换为简体中文。翻译按插件 ID、字段和源文本哈希缓存；所有写操作使用系统级互斥，进程异常退出后由系统自动释放锁。插件启用并重启 Codex 后由 SessionStart 或 MCP 写入中文；插件关闭并重启 Codex 后，由配套的“恢复守护”插件在 SessionStart 恢复英文。不使用计划任务、常驻进程、稳定运行目录或修改 Codex 本体。首次启用需批准 hooks，插件更新后 Codex 可能再次要求批准。",
-    "developerName": "Local",
+    "developerName": "kinlaite",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
       "Read",
       "Write"
     ],
+    "websiteUrl": "https://github.com/kinlaite/codex-native-plugin-zh",
     "defaultPrompt": [
-      "检查原生插件中文化状态和 hooks 生命周期，不要安装计划任务或稳定运行目录。"
+      "检查 Codex 原生插件中文化状态并诊断同步、恢复和自动重启问题。"
     ],
     "brandColor": "#0F766E",
     "composerIcon": "./assets/icon.svg",

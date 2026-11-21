@@ -7,7 +7,6 @@ import {
   CONFIG_FILE,
   DATA_DIR,
   PACK_FILE,
-  PLUGIN_DIR,
   PLUGIN_ID,
   SETTINGS_FILE,
   STATE_FILE,
@@ -16,12 +15,12 @@ import {
   readJson,
   resolveCodexCommand,
 } from "./paths.mjs";
-import {
-  historyTail,
-  readGuardConfigStates,
-  readPluginConfigState,
-} from "./lifecycle.mjs";
+import { historyTail, readPluginConfigState } from "./lifecycle.mjs";
 import { cleanupLegacyResidue } from "./migration.mjs";
+import {
+  ensureRestoreServerRegistered,
+  syncRestoreServerBin,
+} from "./registration.mjs";
 import { startLifecycle } from "./runtime.mjs";
 import { status } from "./sync.mjs";
 import { loadPack, loadState, packStats, saveState } from "./storage.mjs";
@@ -61,58 +60,21 @@ function inspectHookTrustConfig(pluginId = PLUGIN_ID) {
   };
 }
 
-function marketplaceNameFromPluginDir() {
-  const parts = path.resolve(PLUGIN_DIR).split(path.sep);
-  const cacheIndex = parts.lastIndexOf("cache");
-  if (
-    cacheIndex > 0 &&
-    parts[cacheIndex - 1]?.toLowerCase() === "plugins" &&
-    parts.length > cacheIndex + 3
-  ) {
-    return parts[cacheIndex + 1];
-  }
-  return null;
-}
-
-export function inspectGuardStatus() {
-  const marketplace =
-    process.env.CODEX_PLUGIN_ZH_MARKETPLACE || marketplaceNameFromPluginDir();
-  const states = readGuardConfigStates();
-  const expectedId = marketplace
-    ? `native-plugin-zh-guard@${marketplace}`
-    : null;
-  const state =
-    states.find((item) => item.pluginId === expectedId) || states[0] || null;
-  const pluginId = state?.pluginId || expectedId;
-  const cachePath =
-    marketplace
-      ? path.join(
-          CODEX_HOME,
-          "plugins",
-          "cache",
-          marketplace,
-          "native-plugin-zh-guard",
-        )
-      : null;
-  const installed =
-    states.length > 0 ||
-    Boolean(cachePath && fs.existsSync(cachePath));
+// 关闭恢复不再依赖第二个插件：MCP 服务器进程内监听 config.toml，
+// 加上进程回收前的最后机会检查。这里只报告监听能力，供诊断展示。
+function inspectWatcherAvailability() {
+  let writable = false;
+  try {
+    fs.accessSync(path.dirname(CONFIG_FILE), fs.constants.R_OK);
+    fs.readFileSync(CONFIG_FILE, "utf8");
+    writable = true;
+  } catch {}
   return {
-    marketplace,
-    pluginId,
-    installed,
-    enabled: state?.enabled === true,
-    cachePath,
-    hookTrust: pluginId
-      ? inspectHookTrustConfig(pluginId)
-      : {
-          configured: false,
-          entries: [],
-          note: "尚未找到恢复守护插件；无法检查其 hooks 信任记录。",
-        },
-    installCommand: pluginId
-      ? `codex plugin add ${pluginId}`
-      : "codex plugin add native-plugin-zh-guard@<marketplace>",
+    configReadable: writable,
+    available: writable,
+    note: writable
+      ? "运行中的 MCP 服务器会监听插件开关变化并立即恢复英文；进程被回收前还有最后一次检查。"
+      : "无法读取 config.toml，关闭后的自动恢复将依赖下一次启动检查或 CLI。",
   };
 }
 
@@ -123,6 +85,12 @@ export async function bootstrap() {
   ensureDirs();
   const legacy = cleanupLegacyResidue();
   if (!fs.existsSync(STATE_FILE)) saveState(loadState());
+  // 恢复兜底脚本同步到数据目录；插件开关启用时确保 config.toml 注册存在。
+  // 关闭插件后该注册仍在，Codex 每次启动拉起它完成英文恢复。
+  const restoreServer = { synced: syncRestoreServerBin() };
+  if (readPluginConfigState().enabled) {
+    restoreServer.registration = ensureRestoreServerRegistered();
+  }
   const lifecycle = await startLifecycle({
     reason: "mcp-start",
     trigger: "mcp",
@@ -130,8 +98,9 @@ export async function bootstrap() {
   });
   return {
     legacy,
+    restoreServer,
     config: readPluginConfigState(),
-    guard: inspectGuardStatus(),
+    watcher: inspectWatcherAvailability(),
     lifecycle,
   };
 }
@@ -160,12 +129,11 @@ export async function diagnose({ json = false, quiet = false } = {}) {
   const pack = loadPack();
   const codexBin = resolveCodexCommand({ save: true });
   const setting = getSettings();
-  const hookTrust = inspectHookTrustConfig();
-  const guard = inspectGuardStatus();
+  const hookTrust = inspectHookTrustConfig(config.pluginId);
+  const watcher = inspectWatcherAvailability();
   const payload = {
     appVersion: APP_VERSION,
     dataDir: DATA_DIR,
-    pluginDir: PLUGIN_DIR,
     codexHome: CODEX_HOME,
     configFile: CONFIG_FILE,
     pluginConfig: config,
@@ -183,7 +151,7 @@ export async function diagnose({ json = false, quiet = false } = {}) {
     packFile: PACK_FILE,
     packStats: packStats(pack),
     hookTrust,
-    guard,
+    watcher,
     sync: {
       localPlugins: syncStatus.localPlugins,
       installedPlugins: syncStatus.installedPlugins,
@@ -217,21 +185,10 @@ export async function diagnose({ json = false, quiet = false } = {}) {
     console.log(`中文化偏好：${payload.enabled ? "已启用" : "已暂停"}`);
     console.log(`中文覆盖：${payload.overlayActive ? "已生效" : "未生效"}`);
     console.log(`插件 hooks：${payload.hookTrust.configured ? "已写入信任记录" : "待批准"}`);
-    console.log(
-      `恢复守护：${
-        payload.guard.enabled
-          ? "已安装并启用"
-          : payload.guard.installed
-            ? "已安装但未启用"
-            : "未安装"
-      }`,
-    );
-    if (!payload.guard.enabled) {
-      console.log(`恢复守护安装命令：${payload.guard.installCommand}`);
-    }
+    console.log(`关闭恢复监听：${payload.watcher.available ? "可用" : "受限"}`);
     console.log(
       `插件与字段：${payload.sync.localPlugins} / ${
-        payload.sync.alreadyChineseFields + payload.sync.pending.length
+        payload.sync.alreadyChineseFields + payload.sync.pending
       }`,
     );
     console.log(`待翻译：${payload.sync.pending}`);

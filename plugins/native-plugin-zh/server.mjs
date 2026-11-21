@@ -4,10 +4,12 @@ import { APP_VERSION, logLine } from "./lib/paths.mjs";
 import {
   bootstrap,
   diagnose,
-  inspectGuardStatus,
   purgeDataAfterRestore,
 } from "./lib/maintenance.mjs";
 import { readPluginConfigState } from "./lib/lifecycle.mjs";
+import { removeRestoreServerRegistration } from "./lib/registration.mjs";
+import { endLifecycle } from "./lib/runtime.mjs";
+import { startConfigWatcher } from "./lib/watcher.mjs";
 import {
   restoreOriginals,
   status,
@@ -23,7 +25,7 @@ const TOOLS = [
       "查看 Codex 原生插件中文覆盖是否启用、待写入字段、待翻译字段和上次同步结果。",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
     annotations: {
-      readOnlyHint: false,
+      readOnlyHint: true,
       destructiveHint: false,
       openWorldHint: false,
       idempotentHint: true,
@@ -33,7 +35,7 @@ const TOOLS = [
     name: "native_zh_apply",
     title: "立即写入中文",
     description:
-      "启用中文化偏好，并立即把已有中文翻译写入 Codex 实际读取的插件来源清单。关闭插件并重启 Codex 后，由独立的恢复守护插件在 SessionStart 恢复英文。",
+      "启用中文化偏好，并立即把已有中文翻译写入 Codex 实际读取的插件来源清单。关闭插件后，运行中的服务器会自动恢复英文，重启 Codex 即可看到结果。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -133,7 +135,7 @@ const TOOLS = [
     name: "native_zh_diagnose",
     title: "诊断插件生命周期",
     description:
-      "检查 Codex 插件开关、恢复守护插件、中文覆盖、hooks 信任记录、Codex/Node 定位和同步错误。",
+      "检查 Codex 插件开关、中文覆盖、恢复 MCP、hooks 信任记录、Codex/Node 定位和同步错误。",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
     annotations: {
       readOnlyHint: false,
@@ -196,14 +198,9 @@ async function handleApply(args = {}) {
       : `${args.dryRun ? "预览" : "已写入"} ${summary.changedPlugins} 个插件、${
           summary.appliedFields
         } 个字段；待翻译 ${summary.pending.length} 个${pendingPreview(summary)}。`;
-  const guard = inspectGuardStatus();
-  const guardNote =
-    guard.enabled
-      ? ""
-      : ` 恢复守护插件${guard.installed ? "尚未启用" : "未安装"}；关闭主插件后无法自动恢复英文。请运行：${guard.installCommand}，然后重启 Codex。`;
   return {
-    content: [{ type: "text", text: `${text}${guardNote}` }],
-    structuredContent: { ...summary, guard, bootstrap: boot?.skipped ? boot : undefined },
+    content: [{ type: "text", text }],
+    structuredContent: { ...summary, bootstrap: boot?.skipped ? boot : undefined },
   };
 }
 
@@ -256,7 +253,6 @@ async function handleRestore(args = {}) {
 async function handleStatus() {
   await waitForBootstrap();
   const result = await status({ json: false, quiet: true });
-  const guard = inspectGuardStatus();
   return {
     content: [
       {
@@ -267,10 +263,10 @@ async function handleStatus() {
           result.localPlugins
         }，待写入 ${result.plannedFields} 字段，待翻译 ${result.pending.length}，跳过中文源 ${
           result.alreadyChineseFields
-        }；恢复守护${guard.enabled ? "已启用" : guard.installed ? "未启用" : "未安装"}。`,
+        }。关闭插件后由运行中的服务器自动恢复英文，重启 Codex 即可生效。`,
       },
     ],
-    structuredContent: { ...result, guard },
+    structuredContent: result,
   };
 }
 
@@ -288,6 +284,7 @@ async function callTool(name, args) {
       trigger: "mcp",
       quiet: true,
     });
+    removeRestoreServerRegistration();
     const purgeResult = purgeDataAfterRestore(restored, {
       purge: args.purge === true,
     });
@@ -320,15 +317,9 @@ async function callTool(name, args) {
             result.pluginConfig.enabled ? "已启用" : "已关闭"
           }；中文覆盖${result.overlayActive ? "已生效" : "未生效"}；hooks ${
             result.hookTrust.configured ? "已有信任记录" : "待批准"
-          }；恢复守护${
-            result.guard.enabled
-              ? "已启用"
-              : result.guard.installed
-                ? "未启用"
-                : "未安装"
-          }；发现方式 ${result.sync.discoverySource || "未知"}，待翻译 ${
-            result.sync.pending
-          }，错误 ${result.sync.errors.length}。`,
+          }；关闭监听${result.watcher?.available ? "可用" : "受限（仅轮询）"}；发现方式 ${
+            result.sync.discoverySource || "未知"
+          }，待翻译 ${result.sync.pending}，错误 ${result.sync.errors.length}。`,
         },
       ],
       structuredContent: result,
@@ -371,7 +362,7 @@ async function dispatch(message) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: SERVER_NAME, version: APP_VERSION },
         instructions:
-          "维护 Codex 原生插件 UI 的中文清单覆盖层。插件启用并重启 Codex 后写入中文；插件关闭并重启 Codex 后，由同仓库的独立恢复守护插件在 SessionStart 恢复英文。全部代码位于插件包内，不使用计划任务、常驻后台进程或稳定运行目录。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
+          "维护 Windows 版 Codex 原生插件 UI 的中文清单覆盖层，单插件自闭环：插件启用后由 hooks 或 MCP 写入中文；插件关闭后由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。切换开关可自动重启 Codex，WMI 重启助手独立运行且不显示控制台窗口。不安装计划任务或独立外部服务，不修改 Codex 本体。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
       });
       return;
     }
@@ -414,8 +405,28 @@ async function dispatch(message) {
   }
 }
 
+// 进程被 Codex 回收前的最后机会：如果此刻插件已被关闭而监听器还没来得及
+// 恢复英文，就在退出前完成恢复。插件仍启用时这是零写入的空检查。
+let shutdownHandled = false;
+async function shutdownLastChance(trigger) {
+  if (shutdownHandled) return;
+  shutdownHandled = true;
+  try {
+    await Promise.race([
+      endLifecycle({ trigger, lockWaitMs: 0, quiet: true }),
+      new Promise((resolve) => setTimeout(resolve, 7000)),
+    ]);
+  } catch {}
+}
+
 function main() {
-  startBootstrap();
+  // 先让 bootstrap 完成一次 reconcile 再启动监听器：启动期间若已发生切换，
+  // 监听器会通过 last-switch.json 检测到，并且不会和 bootstrap 争抢同步锁。
+  void startBootstrap().finally(() => {
+    // 与用户级恢复服务器各有一个监听器：两者看到同一次切换时，restart.mjs
+    // 会按开关状态签名去重，只重启一次。插件进程被硬杀时由恢复服务器兜底。
+    startConfigWatcher({ autoRestart: true });
+  });
   const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
   input.on("line", (line) => {
     const text = line.trim();
@@ -433,9 +444,15 @@ function main() {
       void dispatch(message);
     }
   });
-  input.on("close", () => process.exit(0));
-  process.once("SIGINT", () => process.exit(0));
-  process.once("SIGTERM", () => process.exit(0));
+  input.on("close", () => {
+    void shutdownLastChance("mcp-stdin-close").finally(() => process.exit(0));
+  });
+  process.once("SIGINT", () => {
+    void shutdownLastChance("sigint").finally(() => process.exit(0));
+  });
+  process.once("SIGTERM", () => {
+    void shutdownLastChance("sigterm").finally(() => process.exit(0));
+  });
 }
 
 main();
