@@ -1,0 +1,10 @@
+{
+  "name": "codex-native-plugin-zh-guard",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "SessionStart restore guard for the native Codex plugin localization plugin.",
+  "engines": {
+    "node": ">=20"
+  }
+}

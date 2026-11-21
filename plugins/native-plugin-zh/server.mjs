@@ -1,7 +1,13 @@
 import readline from "node:readline";
 
 import { APP_VERSION, logLine } from "./lib/paths.mjs";
-import { bootstrap, diagnose, installAutoSync, uninstallAutoSync } from "./lib/tasks.mjs";
+import {
+  bootstrap,
+  diagnose,
+  inspectGuardStatus,
+  purgeDataAfterRestore,
+} from "./lib/maintenance.mjs";
+import { readPluginConfigState } from "./lib/lifecycle.mjs";
 import {
   restoreOriginals,
   status,
@@ -27,7 +33,7 @@ const TOOLS = [
     name: "native_zh_apply",
     title: "立即写入中文",
     description:
-      "启用自动覆盖，并立即把已有中文翻译写入 Codex 实际读取的插件来源清单。",
+      "启用中文化偏好，并立即把已有中文翻译写入 Codex 实际读取的插件来源清单。关闭插件并重启 Codex 后，由独立的恢复守护插件在 SessionStart 恢复英文。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -81,9 +87,9 @@ const TOOLS = [
   },
   {
     name: "native_zh_restore",
-    title: "恢复原始英文清单",
+    title: "手动恢复英文并暂停中文化",
     description:
-      "把已覆盖的插件字段恢复为修改前的原值，并暂停自动同步。默认跳过同步期间被外部改写的字段。",
+      "把已覆盖的插件字段恢复为修改前的原值，并暂停中文化。普通重启不会重新写入；只有再次调用 native_zh_apply，或先关闭再重新启用插件，才会恢复中文化。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -102,44 +108,32 @@ const TOOLS = [
     },
   },
   {
-    name: "native_zh_install_autosync",
-    title: "安装自动同步任务",
+    name: "native_zh_uninstall",
+    title: "卸载中文化并恢复英文",
     description:
-      "安装或修复登录触发、每 5 分钟运行的 Windows 计划任务。任务指向独立稳定运行目录。",
+      "先恢复全部英文并暂停中文化。翻译缓存、状态和备份默认保留，便于追溯；不会删除 Codex 本体或插件安装缓存。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
       properties: {
-        force: {
+        purge: {
           type: "boolean",
-          description: "即使已存在也重新创建任务，默认 false。",
+          description: "删除运行数据、翻译缓存和备份，默认 false。",
         },
       },
     },
     annotations: {
       readOnlyHint: false,
-      destructiveHint: false,
-      openWorldHint: false,
-      idempotentHint: true,
-    },
-  },
-  {
-    name: "native_zh_uninstall_autosync",
-    title: "删除自动同步任务",
-    description: "删除 Windows 计划任务。不会删除翻译缓存、备份或已写入的中文。",
-    inputSchema: { type: "object", additionalProperties: false, properties: {} },
-    annotations: {
-      readOnlyHint: false,
       destructiveHint: true,
       openWorldHint: false,
-      idempotentHint: true,
+      idempotentHint: false,
     },
   },
   {
     name: "native_zh_diagnose",
-    title: "诊断更新韧性",
+    title: "诊断插件生命周期",
     description:
-      "检查稳定运行目录、Codex 与 Node 定位、计划任务、发现方式和同步错误，用于插件或 Codex 更新后排查。",
+      "检查 Codex 插件开关、恢复守护插件、中文覆盖、hooks 信任记录、Codex/Node 定位和同步错误。",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
     annotations: {
       readOnlyHint: false,
@@ -154,9 +148,13 @@ const toolMap = new Map(TOOLS.map((tool) => [tool.name, tool]));
 let bootstrapPromise = null;
 
 export function startBootstrap() {
-  bootstrapPromise ??= bootstrap({ syncCached: true })
+  bootstrapPromise ??= bootstrap()
     .then((result) => {
-      logLine(`MCP bootstrap 完成 runtime=${result.runtime.copied} task=${result.task?.recreated}`);
+      logLine(
+        `MCP bootstrap 完成 fields=${result.lifecycle?.appliedFields || 0} restored=${
+          result.lifecycle?.restoredFields || 0
+        }`,
+      );
       return result;
     })
     .catch((error) => {
@@ -181,12 +179,15 @@ function pendingPreview(summary) {
 }
 
 async function handleApply(args = {}) {
-  await waitForBootstrap();
+  const boot = await waitForBootstrap();
   const summary = await syncWithTranslation({
     dryRun: args.dryRun === true,
     enable: args.dryRun !== true,
+    lastPluginConfigEnabled:
+      args.dryRun === true ? undefined : readPluginConfigState().enabled,
     autoTranslate: args.autoTranslate !== false,
     quiet: true,
+    allowAppServer: false,
   });
   const text = summary.skipped
     ? "已有同步进程在运行，本次跳过。"
@@ -195,9 +196,14 @@ async function handleApply(args = {}) {
       : `${args.dryRun ? "预览" : "已写入"} ${summary.changedPlugins} 个插件、${
           summary.appliedFields
         } 个字段；待翻译 ${summary.pending.length} 个${pendingPreview(summary)}。`;
+  const guard = inspectGuardStatus();
+  const guardNote =
+    guard.enabled
+      ? ""
+      : ` 恢复守护插件${guard.installed ? "尚未启用" : "未安装"}；关闭主插件后无法自动恢复英文。请运行：${guard.installCommand}，然后重启 Codex。`;
   return {
-    content: [{ type: "text", text }],
-    structuredContent: summary,
+    content: [{ type: "text", text: `${text}${guardNote}` }],
+    structuredContent: { ...summary, guard, bootstrap: boot?.skipped ? boot : undefined },
   };
 }
 
@@ -208,6 +214,7 @@ async function handleSync(args = {}) {
     autoTranslate: args.autoTranslate !== false,
     quiet: true,
     scope: args.installedOnly === true ? "installed-only" : "all-local",
+    allowAppServer: false,
   });
   const translated = summary.translation?.translated || 0;
   const text = summary.skipped
@@ -225,30 +232,21 @@ async function handleSync(args = {}) {
 
 async function handleRestore(args = {}) {
   await waitForBootstrap();
-  const result = await restoreOriginals({ force: args.force === true, quiet: true });
+  const result = await restoreOriginals({
+    force: args.force === true,
+    preserveIntent: false,
+    lastPluginConfigEnabled: readPluginConfigState().enabled,
+    reason: "manual-tool",
+    trigger: "mcp",
+    quiet: true,
+  });
   return {
     content: [
       {
         type: "text",
         text: result.skipped
           ? "已有同步进程在运行，本次恢复跳过。"
-          : `已恢复 ${result.restoredPlugins} 个插件、${result.restoredFields} 个字段；自动同步已暂停。跳过冲突 ${result.conflicts.length}，错误 ${result.errors.length}。`,
-      },
-    ],
-    structuredContent: result,
-  };
-}
-
-async function handleInstall(args = {}) {
-  await waitForBootstrap();
-  const result = installAutoSync({ force: args.force === true });
-  return {
-    content: [
-      {
-        type: "text",
-        text: `${result.recreated ? "已重新创建" : "自动同步任务已正常"}：${
-          result.taskName
-        }；稳定同步脚本 ${result.script || result.action}。`,
+          : `已恢复 ${result.restoredPlugins} 个插件、${result.restoredFields} 个字段；中文化已暂停。跳过冲突 ${result.conflicts.length}，错误 ${result.errors.length}。`,
       },
     ],
     structuredContent: result,
@@ -258,18 +256,21 @@ async function handleInstall(args = {}) {
 async function handleStatus() {
   await waitForBootstrap();
   const result = await status({ json: false, quiet: true });
+  const guard = inspectGuardStatus();
   return {
     content: [
       {
         type: "text",
-        text: `自动中文化${result.enabled ? "已启用" : "已暂停"}；本地插件 ${
+        text: `中文化偏好${result.enabled ? "已启用" : "已暂停"}；中文覆盖${
+          result.overlayActive ? "已生效" : "未生效"
+        }；Codex 插件开关${result.pluginConfig.enabled ? "已启用" : "已关闭"}；本地插件 ${
           result.localPlugins
         }，待写入 ${result.plannedFields} 字段，待翻译 ${result.pending.length}，跳过中文源 ${
           result.alreadyChineseFields
-        }。`,
+        }；恢复守护${guard.enabled ? "已启用" : guard.installed ? "未启用" : "未安装"}。`,
       },
     ],
-    structuredContent: result,
+    structuredContent: { ...result, guard },
   };
 }
 
@@ -278,13 +279,34 @@ async function callTool(name, args) {
   if (name === "native_zh_apply") return handleApply(args);
   if (name === "native_zh_sync") return handleSync(args);
   if (name === "native_zh_restore") return handleRestore(args);
-  if (name === "native_zh_install_autosync") return handleInstall(args);
-  if (name === "native_zh_uninstall_autosync") {
+  if (name === "native_zh_uninstall") {
     await waitForBootstrap();
-    const result = uninstallAutoSync();
+    const restored = await restoreOriginals({
+      preserveIntent: false,
+      lastPluginConfigEnabled: readPluginConfigState().enabled,
+      reason: "uninstall",
+      trigger: "mcp",
+      quiet: true,
+    });
+    const purgeResult = purgeDataAfterRestore(restored, {
+      purge: args.purge === true,
+    });
     return {
-      content: [{ type: "text", text: `已删除计划任务 ${result.taskName}。` }],
-      structuredContent: result,
+      content: [
+        {
+          type: "text",
+          text: `已恢复 ${restored.restoredPlugins} 个插件、${
+            restored.restoredFields
+          } 个字段；${
+            purgeResult.purged
+              ? "缓存和备份已清除"
+              : purgeResult.reason === "not-requested"
+                ? "翻译缓存与备份已保留"
+                : `清理已阻止（${purgeResult.reason}），恢复数据仍保留`
+          }。`,
+        },
+      ],
+      structuredContent: { restored, ...purgeResult },
     };
   }
   if (name === "native_zh_diagnose") {
@@ -294,10 +316,16 @@ async function callTool(name, args) {
       content: [
         {
           type: "text",
-          text: `任务${result.task.exists ? "已安装" : "缺失"}，自愈检查${
-            result.task.ok ? "正常" : "异常"
-          }，动作${result.task.actionMatches ? "正常" : "异常"}，触发器${
-            result.task.triggersOk ? "正常" : "异常"
+          text: `Codex 插件开关${
+            result.pluginConfig.enabled ? "已启用" : "已关闭"
+          }；中文覆盖${result.overlayActive ? "已生效" : "未生效"}；hooks ${
+            result.hookTrust.configured ? "已有信任记录" : "待批准"
+          }；恢复守护${
+            result.guard.enabled
+              ? "已启用"
+              : result.guard.installed
+                ? "未启用"
+                : "未安装"
           }；发现方式 ${result.sync.discoverySource || "未知"}，待翻译 ${
             result.sync.pending
           }，错误 ${result.sync.errors.length}。`,
@@ -343,7 +371,7 @@ async function dispatch(message) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: SERVER_NAME, version: APP_VERSION },
         instructions:
-          "维护 Codex 原生插件 UI 的中文清单覆盖层。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
+          "维护 Codex 原生插件 UI 的中文清单覆盖层。插件启用并重启 Codex 后写入中文；插件关闭并重启 Codex 后，由同仓库的独立恢复守护插件在 SessionStart 恢复英文。全部代码位于插件包内，不使用计划任务、常驻后台进程或稳定运行目录。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
       });
       return;
     }
@@ -406,6 +434,8 @@ function main() {
     }
   });
   input.on("close", () => process.exit(0));
+  process.once("SIGINT", () => process.exit(0));
+  process.once("SIGTERM", () => process.exit(0));
 }
 
 main();

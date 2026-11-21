@@ -17,6 +17,10 @@ if defined LOCALAPPDATA for /d %%D in ("%LOCALAPPDATA%\OpenAI\Codex\runtimes\cua
   "%%~fD\bin\node.exe" %*
   exit /b
 )
+if defined ProgramFiles for /d %%D in ("%ProgramFiles%\WindowsApps\OpenAI.Codex_*") do if exist "%%~fD\app\resources\cua_node\bin\node.exe" (
+  "%%~fD\app\resources\cua_node\bin\node.exe" %*
+  exit /b
+)
 
 where node >nul 2>&1
 if not errorlevel 1 (

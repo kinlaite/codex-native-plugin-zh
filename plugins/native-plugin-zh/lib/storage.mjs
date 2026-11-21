@@ -11,6 +11,7 @@ import {
   STATE_FILE,
   ensureDirs,
   firstNonEmpty,
+  hasHan,
   isObject,
   nowIso,
   readJson,
@@ -24,16 +25,34 @@ export function loadState() {
   const state = readJson(STATE_FILE, null);
   if (!isObject(state)) {
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       locale: LOCALE,
       enabled: true,
+      overlayActive: false,
       lastSyncAt: null,
       plugins: {},
     };
   }
   state.plugins = isObject(state.plugins) ? state.plugins : {};
   if (typeof state.enabled !== "boolean") state.enabled = true;
+  if (typeof state.overlayActive !== "boolean") {
+    state.overlayActive = Object.values(state.plugins).some((entry) => {
+      if (!entry?.lastAppliedAt) return false;
+      return !entry.lastRestoredAt || entry.lastAppliedAt > entry.lastRestoredAt;
+    });
+  }
+  state.schemaVersion = 2;
   return state;
+}
+
+export function loadStateInfo() {
+  const raw = readJson(STATE_FILE, null);
+  return {
+    state: loadState(),
+    persisted: isObject(raw),
+    hadLifecycleMarker:
+      isObject(raw) && typeof raw.lastPluginConfigEnabled === "boolean",
+  };
 }
 
 export function saveState(state) {
@@ -240,11 +259,51 @@ function backupFileName(key) {
   return `${key.replace(/[^a-zA-Z0-9._-]+/g, "__")}.json`;
 }
 
+function cleanBackupObject(manifest, entry, sourceFields) {
+  const obj = structuredClone(manifest.obj);
+  for (const field of FIELDS) {
+    const previous = entry.fields?.[field];
+    if (!previous) continue;
+    const present = previous.originalPresent === true;
+    if (!present) {
+      if (
+        isObject(obj.interface) &&
+        Object.prototype.hasOwnProperty.call(obj.interface, field)
+      ) {
+        delete obj.interface[field];
+      }
+      continue;
+    }
+    if (!isObject(obj.interface)) obj.interface = {};
+    obj.interface[field] =
+      stringValue(sourceFields?.[field]) ||
+      stringValue(previous.originalValue);
+  }
+  if (
+    isObject(obj.interface) &&
+    Object.keys(obj.interface).length === 0 &&
+    manifest.hasInterface === false
+  ) {
+    delete obj.interface;
+  }
+  return obj;
+}
+
 export function saveBackup(entry, manifest, sourceFields, reason) {
   ensureDirs();
   const file = path.join(BACKUP_DIR, backupFileName(entry.key));
+  const originalFields = {};
+  for (const field of FIELDS) {
+    const previous = entry.fields?.[field];
+    if (!previous) continue;
+    originalFields[field] = {
+      present: previous.originalPresent === true,
+      value: stringValue(previous.originalValue) || null,
+    };
+  }
+  const cleanObject = cleanBackupObject(manifest, entry, sourceFields);
   const record = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     key: entry.key,
     marketplace: entry.marketplace,
     pluginName: entry.pluginName,
@@ -254,11 +313,86 @@ export function saveBackup(entry, manifest, sourceFields, reason) {
     reason,
     interfaceExisted: manifest.hasInterface,
     sourceFields,
-    originalText: manifest.text,
+    originalFields,
+    originalText: serializeManifest(manifest, cleanObject),
   };
   writeJsonAtomic(file, record);
   entry.backupFile = file;
   return file;
+}
+
+export function listBackupRecords() {
+  ensureDirs();
+  const records = [];
+  let names = [];
+  try {
+    names = fs.readdirSync(BACKUP_DIR);
+  } catch {
+    return records;
+  }
+  for (const name of names) {
+    if (!name.endsWith(".json")) continue;
+    const file = path.join(BACKUP_DIR, name);
+    const record = readJson(file, null);
+    if (
+      !isObject(record) ||
+      !stringValue(record.key) ||
+      !stringValue(record.manifestPath) ||
+      !isObject(record.sourceFields)
+    ) {
+      continue;
+    }
+    records.push({ ...record, backupFile: file });
+  }
+  return records;
+}
+
+export function recoverEntryFromBackup(record, pack) {
+  let original;
+  try {
+    original = JSON.parse(stringValue(record.originalText));
+  } catch {
+    original = null;
+  }
+  const originalInterface = isObject(original?.interface) ? original.interface : {};
+  const fields = {};
+  for (const field of FIELDS) {
+    const source = stringValue(record.sourceFields?.[field]);
+    if (!source || hasHan(source)) continue;
+    const previous = record.originalFields?.[field];
+    const originalPresent =
+      isObject(previous) && typeof previous.present === "boolean"
+        ? previous.present
+        : Object.prototype.hasOwnProperty.call(originalInterface, field);
+    const storedOriginal = stringValue(previous?.value);
+    const originalValue = originalPresent
+      ? (!hasHan(storedOriginal) && storedOriginal) ||
+        source ||
+        (typeof originalInterface[field] === "string" ? originalInterface[field] : null)
+      : null;
+    const sourceHash = sha256(source);
+    fields[field] = {
+      source,
+      sourceHash,
+      translation: packTranslation(pack, record.key, field, sourceHash),
+      originalPresent,
+      originalValue,
+    };
+  }
+  if (!Object.keys(fields).length) return null;
+  return {
+    key: record.key,
+    marketplace: record.marketplace,
+    pluginName: record.pluginName,
+    sourcePath: record.sourcePath,
+    manifestPath: record.manifestPath,
+    interfaceExisted: record.interfaceExisted === true,
+    backupFile: record.backupFile,
+    recoveredFromBackup: true,
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+    fields,
+  };
 }
 
 export function applyFields(manifest, fields) {

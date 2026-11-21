@@ -17,6 +17,7 @@ import {
   nowIso,
   readJson,
   resolveCodexCommand,
+  sha256,
   stringValue,
   updateSettings,
   withLock,
@@ -24,15 +25,18 @@ import {
   writeTextAtomic,
 } from "./paths.mjs";
 import { discoverLocalPlugins } from "./discovery.mjs";
+import { appendHistory, historyTail, readPluginConfigState } from "./lifecycle.mjs";
 import {
   applyFields,
   currentFieldValue,
   loadPack,
   loadState,
+  listBackupRecords,
   makeStateEntry,
   packStats,
   packTranslation,
   readManifest,
+  recoverEntryFromBackup,
   saveBackup,
   savePack,
   saveState,
@@ -60,11 +64,133 @@ function emptySummary(overrides = {}) {
   };
 }
 
+function canApplyCachedValue(previous, raw) {
+  if (!previous || !stringValue(previous.translation)) return false;
+  if (raw === previous.translation) return false;
+  if (previous.originalPresent) return raw === previous.originalValue;
+  return raw === null;
+}
+
+function applyCachedUnlocked({
+  reason = "startup",
+  trigger = "mcp",
+  quiet = false,
+  enable = false,
+  lastPluginConfigEnabled,
+} = {}) {
+  const startedAt = Date.now();
+  const state = loadState();
+  if (enable) state.enabled = true;
+  if (typeof lastPluginConfigEnabled === "boolean") {
+    state.lastPluginConfigEnabled = lastPluginConfigEnabled;
+  }
+  if (!state.enabled) {
+    saveState(state);
+    return {
+      disabled: true,
+      changedPlugins: 0,
+      appliedFields: 0,
+      alreadyChineseFields: 0,
+      errors: [],
+      reason,
+      trigger,
+    };
+  }
+
+  let changedPlugins = 0;
+  let appliedFields = 0;
+  let alreadyChineseFields = 0;
+  const errors = [];
+  let active = false;
+
+  for (const entry of Object.values(state.plugins)) {
+    try {
+      if (!entry?.manifestPath || !fs.existsSync(entry.manifestPath)) continue;
+      const manifest = readManifest(entry.manifestPath);
+      const fieldsToWrite = [];
+      for (const field of FIELDS) {
+        const previous = entry.fields?.[field];
+        const raw = currentFieldValue(manifest.obj, field);
+        if (previous?.translation && raw === previous.translation) {
+          alreadyChineseFields += 1;
+          active = true;
+          continue;
+        }
+        if (canApplyCachedValue(previous, raw)) {
+          fieldsToWrite.push({ field, value: previous.translation });
+        }
+      }
+      if (!fieldsToWrite.length) continue;
+      const output = applyFields(manifest, fieldsToWrite);
+      if (!output.changed.length) continue;
+      writeManifest(entry.manifestPath, output.text);
+      entry.lastAppliedAt = nowIso();
+      entry.lastApplyReason = reason;
+      appliedFields += output.changed.length;
+      changedPlugins += 1;
+      active = true;
+    } catch (error) {
+      errors.push({ key: entry?.key || null, message: error.message });
+      logLine(`缓存写入失败 ${entry?.key || "?"}: ${error.message}`);
+    }
+  }
+
+  state.overlayActive = active;
+  state.lastApplyAt = nowIso();
+  state.lastApplyReason = reason;
+  saveState(state);
+
+  const result = {
+    disabled: false,
+    changedPlugins,
+    appliedFields,
+    alreadyChineseFields,
+    errors,
+    reason,
+    trigger,
+    elapsedMs: Date.now() - startedAt,
+  };
+  appendHistory({
+    action: "apply",
+    mode: "cached",
+    reason,
+    trigger,
+    changedPlugins,
+    appliedFields,
+    alreadyChineseFields,
+    errors: errors.length,
+    elapsedMs: result.elapsedMs,
+  });
+  if (!quiet && appliedFields) {
+    console.log(`已从缓存写入 ${changedPlugins} 个插件、${appliedFields} 个字段。`);
+  }
+  return result;
+}
+
+export async function applyCached(options = {}) {
+  const { lockWaitMs = 0, ...rest } = options;
+  const result = await withLock(() => applyCachedUnlocked(rest), { waitMs: lockWaitMs });
+  if (result?.skipped) {
+    return {
+      skipped: true,
+      reason: result.reason,
+      disabled: false,
+      changedPlugins: 0,
+      appliedFields: 0,
+      alreadyChineseFields: 0,
+      errors: [],
+    };
+  }
+  return result;
+}
+
 export async function syncInstalled({
   dryRun = false,
   quiet = false,
   scope = "all-local",
   ignoreDisabled = false,
+  allowAppServer = true,
+  allowCli = true,
 } = {}) {
   const state = loadState();
   if (!state.enabled && !ignoreDisabled) {
@@ -72,8 +198,28 @@ export async function syncInstalled({
   }
 
   const pack = loadPack();
-  const discovered = await discoverLocalPlugins({ scope });
-  const plugins = discovered.plugins;
+  const backupByKey = new Map(
+    listBackupRecords().map((record) => [record.key, record]),
+  );
+  const discovered = await discoverLocalPlugins({ scope, allowAppServer, allowCli });
+  const plugins = [...discovered.plugins];
+  if (scope === "all-local") {
+    const discoveredKeys = new Set(plugins.map((plugin) => plugin.key));
+    for (const entry of Object.values(state.plugins)) {
+      if (discoveredKeys.has(entry?.key)) continue;
+      if (!entry?.manifestPath || !fs.existsSync(entry.manifestPath)) continue;
+      plugins.push({
+        key: entry.key,
+        marketplace: entry.marketplace,
+        pluginName: entry.pluginName,
+        sourcePath: entry.sourcePath,
+        manifestPath: entry.manifestPath,
+        version: entry.version || null,
+        installed: false,
+        stateOnly: true,
+      });
+    }
+  }
   const pendingMap = new Map();
   const results = [];
   const errors = [...discovered.errors];
@@ -87,7 +233,15 @@ export async function syncInstalled({
       let entry = state.plugins[plugin.key];
       let pathChanged = false;
       if (!entry) {
-        entry = makeStateEntry(plugin, manifest);
+        const backup = backupByKey.get(plugin.key);
+        entry = backup ? recoverEntryFromBackup(backup, pack) : null;
+        if (entry) {
+          pathChanged =
+            !entry.manifestPath ||
+            path.resolve(entry.manifestPath) !== path.resolve(plugin.manifestPath);
+        } else {
+          entry = makeStateEntry(plugin, manifest);
+        }
         state.plugins[plugin.key] = entry;
       } else {
         pathChanged =
@@ -224,7 +378,20 @@ export async function syncInstalled({
       errors: errors.length,
       discoverySource: discovered.source,
     };
+    if (appliedFields > 0 || alreadyChineseFields > 0) state.overlayActive = true;
     saveState(state);
+    if (appliedFields > 0 || errors.length) {
+      appendHistory({
+        action: "apply",
+        mode: "discovery",
+        reason: "sync",
+        trigger: "sync",
+        changedPlugins,
+        appliedFields,
+        alreadyChineseFields,
+        errors: errors.length,
+      });
+    }
   }
 
   if (!quiet) {
@@ -490,15 +657,39 @@ async function syncWithTranslationUnlocked({
   scope = "all-local",
   forceTranslate = false,
   enable = false,
+  allowAppServer = true,
+  allowCli = true,
+  lastPluginConfigEnabled,
+  requirePluginEnabled = false,
 } = {}) {
+  if (requirePluginEnabled && !readPluginConfigState().enabled) {
+    return emptySummary({
+      skipped: true,
+      reason: "plugin-disabled-before-lock",
+      enabled: false,
+    });
+  }
   if (enable && !dryRun) {
     const state = loadState();
-    if (!state.enabled) {
-      state.enabled = true;
+    const needsSave =
+      !state.enabled ||
+      (typeof lastPluginConfigEnabled === "boolean" &&
+        state.lastPluginConfigEnabled !== lastPluginConfigEnabled);
+    state.enabled = true;
+    if (typeof lastPluginConfigEnabled === "boolean") {
+      state.lastPluginConfigEnabled = lastPluginConfigEnabled;
+    }
+    if (needsSave) {
       saveState(state);
     }
   }
-  let summary = await syncInstalled({ dryRun, quiet, scope });
+  let summary = await syncInstalled({
+    dryRun,
+    quiet,
+    scope,
+    allowAppServer,
+    allowCli,
+  });
   if (summary.disabled || dryRun || !autoTranslate || !summary.pending.length) {
     return summary;
   }
@@ -512,7 +703,13 @@ async function syncWithTranslationUnlocked({
   const translation = await translateWithCodex(summary.pending);
   if (translation.translated > 0) {
     updateSettings({ lastTranslationFailureAt: null, lastTranslationSuccessAt: nowIso() });
-    summary = await syncInstalled({ dryRun: false, quiet, scope });
+    summary = await syncInstalled({
+      dryRun: false,
+      quiet,
+      scope,
+      allowAppServer,
+      allowCli,
+    });
   } else if (translation.attempted > 0) {
     updateSettings({ lastTranslationFailureAt: nowIso() });
   }
@@ -520,10 +717,13 @@ async function syncWithTranslationUnlocked({
 }
 
 export async function syncWithTranslation(options = {}) {
-  if (options.dryRun === true) {
-    return syncWithTranslationUnlocked({ ...options, enable: false });
+  const { lockWaitMs = 0, ...rest } = options;
+  if (rest.dryRun === true) {
+    return syncWithTranslationUnlocked({ ...rest, enable: false });
   }
-  const result = await withLock(() => syncWithTranslationUnlocked(options));
+  const result = await withLock(() => syncWithTranslationUnlocked(rest), {
+    waitMs: lockWaitMs,
+  });
   if (result?.skipped) {
     const state = loadState();
     return emptySummary({
@@ -536,14 +736,82 @@ export async function syncWithTranslation(options = {}) {
   return result;
 }
 
-function restoreOriginalsUnlocked({ force = false, quiet = false } = {}) {
+function shouldSkipRestore(previous, raw) {
+  if (previous.translation !== null) {
+    if (raw === previous.translation) return false;
+    if (previous.originalPresent) {
+      return (
+        raw === null ||
+        (raw !== previous.originalValue && raw !== previous.source)
+      );
+    }
+    return raw !== null;
+  }
+  if (previous.originalPresent) {
+    return (
+      raw === null ||
+      (raw !== previous.originalValue && raw !== previous.source)
+    );
+  }
+  return raw !== null;
+}
+
+function restoreOriginalsUnlocked({
+  force = false,
+  quiet = false,
+  preserveIntent = false,
+  reason = "manual",
+  trigger = "mcp",
+  onlyIfOverlayActive = false,
+  lastPluginConfigEnabled,
+  requirePluginDisabled = false,
+  recordNoop = true,
+} = {}) {
+  const startedAt = Date.now();
   const state = loadState();
-  state.enabled = false;
-  saveState(state);
+  const overlayWasActive = state.overlayActive === true;
+  const markerBefore = state.lastPluginConfigEnabled;
+  if (requirePluginDisabled && readPluginConfigState().enabled) {
+    return {
+      skipped: true,
+      reason: "plugin-enabled-before-lock",
+      restoredPlugins: 0,
+      restoredFields: 0,
+      conflicts: [],
+      errors: [],
+      elapsedMs: Date.now() - startedAt,
+    };
+  }
+  if (onlyIfOverlayActive && state.overlayActive !== true) {
+    return {
+      skipped: true,
+      reason: "overlay-inactive",
+      restoredPlugins: 0,
+      restoredFields: 0,
+      conflicts: [],
+      errors: [],
+      elapsedMs: Date.now() - startedAt,
+    };
+  }
+  if (!preserveIntent) state.enabled = false;
+  if (typeof lastPluginConfigEnabled === "boolean") {
+    state.lastPluginConfigEnabled = lastPluginConfigEnabled;
+  }
   let restoredPlugins = 0;
   let restoredFields = 0;
   const errors = [];
   const conflicts = [];
+  const pack = loadPack({ persist: false });
+  let recoveredBackupEntries = 0;
+
+  for (const record of listBackupRecords()) {
+    if (state.plugins[record.key]) continue;
+    if (!fs.existsSync(record.manifestPath)) continue;
+    const entry = recoverEntryFromBackup(record, pack);
+    if (!entry) continue;
+    state.plugins[record.key] = entry;
+    recoveredBackupEntries += 1;
+  }
 
   for (const entry of Object.values(state.plugins)) {
     try {
@@ -556,12 +824,7 @@ function restoreOriginalsUnlocked({ force = false, quiet = false } = {}) {
         const previous = entry.fields?.[field];
         if (!previous) continue;
         const raw = currentFieldValue(obj, field);
-        if (
-          !force &&
-          previous.translation !== null &&
-          raw !== null &&
-          raw !== previous.translation
-        ) {
+        if (!force && shouldSkipRestore(previous, raw)) {
           conflicts.push({ key: entry.key, field, current: raw });
           continue;
         }
@@ -597,14 +860,48 @@ function restoreOriginalsUnlocked({ force = false, quiet = false } = {}) {
         restoredPlugins += 1;
       }
       entry.lastRestoredAt = nowIso();
+      entry.lastRestoreReason = reason;
     } catch (error) {
       errors.push({ key: entry.key, message: error.message });
     }
   }
 
-  saveState(state);
+  state.overlayActive = false;
+  state.lastRestoreAt = nowIso();
+  state.lastRestoreReason = reason;
+  state.lastRestoreConflicts = conflicts.length;
+  const didWork =
+    restoredFields > 0 ||
+    conflicts.length > 0 ||
+    errors.length > 0 ||
+    recoveredBackupEntries > 0;
+  const markerChanged =
+    typeof lastPluginConfigEnabled === "boolean" &&
+    markerBefore !== lastPluginConfigEnabled;
+  if (recordNoop || didWork || overlayWasActive || markerChanged) {
+    saveState(state);
+  }
+  const elapsedMs = Date.now() - startedAt;
+  if (recordNoop || didWork || overlayWasActive || markerChanged) {
+    appendHistory({
+      action: "restore",
+      reason,
+      trigger,
+      preserveIntent,
+      restoredPlugins,
+      restoredFields,
+      conflicts: conflicts.length,
+      errors: errors.length,
+      recoveredBackupEntries,
+      elapsedMs,
+    });
+  }
   if (!quiet) {
-    console.log(`已恢复 ${restoredPlugins} 个插件、${restoredFields} 个字段；自动同步已暂停。`);
+    console.log(
+      `已恢复 ${restoredPlugins} 个插件、${restoredFields} 个字段；${
+        preserveIntent ? "保留中文化启用偏好" : "自动同步已暂停"
+      }。`,
+    );
     if (conflicts.length) {
       console.log(`跳过 ${conflicts.length} 个已被外部修改的字段：`);
       for (const item of conflicts) console.log(`- ${item.key} / ${item.field}`);
@@ -614,11 +911,19 @@ function restoreOriginalsUnlocked({ force = false, quiet = false } = {}) {
       for (const item of errors) console.log(`- ${item.key}: ${item.message}`);
     }
   }
-  return { restoredPlugins, restoredFields, conflicts, errors };
+  return {
+    restoredPlugins,
+    restoredFields,
+    conflicts,
+    errors,
+    recoveredBackupEntries,
+    elapsedMs,
+  };
 }
 
 export async function restoreOriginals(options = {}) {
-  const result = await withLock(() => restoreOriginalsUnlocked(options));
+  const { lockWaitMs = 0, ...rest } = options;
+  const result = await withLock(() => restoreOriginalsUnlocked(rest), { waitMs: lockWaitMs });
   if (result?.skipped) {
     return {
       skipped: true,
@@ -627,6 +932,7 @@ export async function restoreOriginals(options = {}) {
       restoredFields: 0,
       conflicts: [],
       errors: [],
+      recoveredBackupEntries: 0,
     };
   }
   return result;
@@ -634,6 +940,7 @@ export async function restoreOriginals(options = {}) {
 
 export async function status({ json = false, scope = "all-local", quiet = false } = {}) {
   const state = loadState();
+  const pluginConfig = readPluginConfigState();
   const summary = await syncInstalled({
     dryRun: true,
     quiet: true,
@@ -643,6 +950,12 @@ export async function status({ json = false, scope = "all-local", quiet = false 
   const pack = loadPack({ persist: false });
   const payload = {
     enabled: state.enabled,
+    overlayActive: state.overlayActive === true,
+    lastPluginConfigEnabled:
+      typeof state.lastPluginConfigEnabled === "boolean"
+        ? state.lastPluginConfigEnabled
+        : null,
+    pluginConfig,
     locale: "zh-CN",
     translationsFile: PACK_FILE,
     stateFile: STATE_FILE,
@@ -657,6 +970,9 @@ export async function status({ json = false, scope = "all-local", quiet = false 
     errors: summary.errors,
     discoverySource: summary.discoverySource,
     lastSyncAt: state.lastSyncAt || null,
+    lastApplyAt: state.lastApplyAt || null,
+    lastRestoreAt: state.lastRestoreAt || null,
+    history: historyTail(10),
   };
 
   if (json) {
@@ -665,7 +981,13 @@ export async function status({ json = false, scope = "all-local", quiet = false 
   }
   if (quiet) return payload;
 
-  console.log(`自动同步：${state.enabled ? "已启用" : "已暂停"}`);
+  console.log(`中文化偏好：${state.enabled ? "已启用" : "已暂停"}`);
+  console.log(`中文覆盖：${state.overlayActive ? "已生效" : "未生效"}`);
+  console.log(
+    `Codex 插件开关：${
+      pluginConfig.enabled ? "已启用" : pluginConfig.found ? "已关闭" : "未配置"
+    }`,
+  );
   console.log(
     `本地插件：${payload.localPlugins}（已安装 ${payload.installedPlugins}，可安装 ${
       payload.localPlugins - payload.installedPlugins

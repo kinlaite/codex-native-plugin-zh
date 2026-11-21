@@ -116,8 +116,9 @@ function pluginKey(marketplace, name) {
   return `${marketplace}/${name}`;
 }
 
-function collectInstalledKeys() {
+function collectInstalledKeys({ allowCli = true } = {}) {
   const keys = new Set();
+  if (!allowCli) return keys;
   try {
     const result = runCodexCliJson(["plugin", "list", "--json"]);
     for (const plugin of [...(result.installed || []), ...(result.available || [])]) {
@@ -196,7 +197,7 @@ function findMarketplaceMetadataRoots(base, maxDepth) {
   return roots;
 }
 
-function marketplaceRoots() {
+function marketplaceRoots({ allowCli = true } = {}) {
   const roots = [];
   const seen = new Set();
 
@@ -209,12 +210,14 @@ function marketplaceRoots() {
     roots.push({ name, root: normalized });
   }
 
-  try {
-    const result = runCodexCliJson(["plugin", "marketplace", "list", "--json"]);
-    for (const item of result.marketplaces || []) {
-      add(stringValue(item.name), item.root);
-    }
-  } catch {}
+  if (allowCli) {
+    try {
+      const result = runCodexCliJson(["plugin", "marketplace", "list", "--json"]);
+      for (const item of result.marketplaces || []) {
+        add(stringValue(item.name), item.root);
+      }
+    } catch {}
+  }
 
   for (const item of parseConfigMarketplaceRoots()) add(item.name, item.source);
 
@@ -301,10 +304,10 @@ function candidatePluginDirectories(root) {
   return [...candidates.values()];
 }
 
-function scanMarketplaceRoots(installedKeys) {
+function scanMarketplaceRoots(installedKeys, options = {}) {
   const found = [];
   const errors = [];
-  for (const { name, root } of marketplaceRoots()) {
+  for (const { name, root } of marketplaceRoots(options)) {
     if (!fs.existsSync(root)) continue;
     for (const candidate of candidatePluginDirectories(root)) {
       try {
@@ -364,32 +367,41 @@ function normalizeAppServerResult(result, scope) {
   return { plugins, remoteSkipped };
 }
 
-export async function discoverLocalPlugins({ scope = "all-local" } = {}) {
+export async function discoverLocalPlugins({
+  scope = "all-local",
+  allowAppServer = true,
+  allowCli = true,
+} = {}) {
   const errors = [];
   const byKey = new Map();
   let remoteSkipped = 0;
   let appServerUsed = false;
 
   const method = scope === "installed-only" ? "plugin/installed" : "plugin/list";
-  try {
-    let result;
+  if (allowAppServer) {
     try {
-      result = await runAppServerOnce(method, scope === "all-local" ? { forceRefetch: true } : {});
+      let result;
+      try {
+        result = await runAppServerOnce(
+          method,
+          scope === "all-local" ? { forceRefetch: true } : {},
+        );
+      } catch (error) {
+        if (scope !== "all-local") throw error;
+        result = await runAppServerOnce(method, {});
+      }
+      const normalized = normalizeAppServerResult(result, scope);
+      remoteSkipped = normalized.remoteSkipped;
+      for (const plugin of normalized.plugins) byKey.set(plugin.key, plugin);
+      appServerUsed = true;
     } catch (error) {
-      if (scope !== "all-local") throw error;
-      result = await runAppServerOnce(method, {});
+      errors.push({ stage: "app-server", message: error.message });
+      logLine(`app-server 发现失败，改用文件扫描：${error.message}`);
     }
-    const normalized = normalizeAppServerResult(result, scope);
-    remoteSkipped = normalized.remoteSkipped;
-    for (const plugin of normalized.plugins) byKey.set(plugin.key, plugin);
-    appServerUsed = true;
-  } catch (error) {
-    errors.push({ stage: "app-server", message: error.message });
-    logLine(`app-server 发现失败，改用文件扫描：${error.message}`);
   }
 
-  const installedKeys = collectInstalledKeys();
-  const scanned = scanMarketplaceRoots(installedKeys);
+  const installedKeys = collectInstalledKeys({ allowCli });
+  const scanned = scanMarketplaceRoots(installedKeys, { allowCli });
   errors.push(...scanned.errors.map((item) => ({ stage: "scan", ...item })));
   for (const plugin of scanned.plugins) {
     const previous = byKey.get(plugin.key);

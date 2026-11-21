@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd.exe /d /s /c call \"${PLUGIN_ROOT}\\scripts\\run_hook.cmd\" SessionStart",
+            "timeout": 30,
+            "statusMessage": "正在应用中文化缓存"
+          }
+        ]
+      }
+    ]
+  }
+}

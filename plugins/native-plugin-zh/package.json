@@ -1,9 +1,9 @@
 {
   "name": "codex-native-plugin-zh-runtime",
-  "version": "1.0.7",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
-  "description": "Update-safe native Codex plugin UI localization runtime.",
+  "description": "Self-contained, lifecycle-scoped, reversible native Codex plugin UI localization.",
   "scripts": {
     "start": "node server.mjs",
     "cli": "node scripts/cli.mjs",

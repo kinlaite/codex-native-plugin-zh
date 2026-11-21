@@ -15,7 +15,6 @@ const child = spawn(process.execPath, [serverPath], {
     ...process.env,
     CODEX_PLUGIN_ZH_DATA_DIR: tempDir,
     CODEX_PLUGIN_ZH_DISABLE_BOOTSTRAP: "1",
-    CODEX_PLUGIN_ZH_NO_TASK: "1",
   },
 });
 

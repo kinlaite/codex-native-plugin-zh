@@ -6,12 +6,11 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-export const APP_VERSION = "1.0.7";
+export const APP_VERSION = "1.2.0";
 export const APP_ID = "native-plugin-zh";
 export const LOCALE = "zh-CN";
+export const PLUGIN_ID = "native-plugin-zh@native-plugin-zh-local";
 export const FIELDS = ["displayName", "shortDescription", "longDescription"];
-export const TASK_NAME = "CodexPluginZhNativeSync";
-export const TASK_SCHEMA_VERSION = 4;
 export const TRANSLATION_BACKOFF_MS = 15 * 60 * 1000;
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -23,15 +22,15 @@ export const DATA_DIR = path.resolve(
   process.env.CODEX_PLUGIN_ZH_DATA_DIR ||
     path.join(CODEX_HOME, "plugin-i18n-native"),
 );
-export const TOOL_DIR = path.join(DATA_DIR, "tool");
 export const STATE_FILE = path.join(DATA_DIR, "state.json");
 export const PACK_FILE = path.join(DATA_DIR, "translations.zh-CN.json");
 export const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
+export const CONFIG_FILE = path.join(CODEX_HOME, "config.toml");
+export const HISTORY_FILE = path.join(DATA_DIR, "history.jsonl");
 export const BACKUP_DIR = path.join(DATA_DIR, "backups");
 export const LOG_FILE = path.join(DATA_DIR, "sync.log");
 export const LOCK_FILE = path.join(DATA_DIR, "sync.lock");
 export const SCHEMA_FILE = path.join(DATA_DIR, "translation.schema.json");
-export const TASK_XML_FILE = path.join(DATA_DIR, "task.xml");
 export const SEED_FILE = path.join(PLUGIN_DIR, "translations", `${LOCALE}.seed.json`);
 export const MAP_FILE = path.join(PLUGIN_DIR, "translations", `${LOCALE}.map.json`);
 
@@ -97,18 +96,6 @@ export function writeTextAtomic(file, value, encoding = "utf8") {
     fs.renameSync(temp, file);
   } catch {
     fs.copyFileSync(temp, file);
-    fs.unlinkSync(temp);
-  }
-}
-
-export function copyFileAtomic(source, target) {
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  const temp = `${target}.${process.pid}.${Date.now()}.tmp`;
-  fs.copyFileSync(source, temp);
-  try {
-    fs.renameSync(temp, target);
-  } catch {
-    fs.copyFileSync(temp, target);
     fs.unlinkSync(temp);
   }
 }
@@ -213,18 +200,17 @@ export function resolveCodexCommand({ save = false } = {}) {
 
   const settings = getSettings();
   const savedCommand = normalizeFsPath(settings.codexBin);
-  if (savedCommand && fs.existsSync(savedCommand)) return savedCommand;
-
   const resolved =
-    findOnPath(["codex.exe"]) ||
     findNewestWindowsAppsCodexExe() ||
+    (savedCommand && fs.existsSync(savedCommand) ? savedCommand : null) ||
+    findOnPath(["codex.exe"]) ||
     findAppxCodexExe() ||
     findOnPath(["codex.cmd"]) ||
     "codex";
 
-  if (save) {
+  if (save && resolved !== "codex" && normalizeFsPath(resolved) !== savedCommand) {
     updateSettings({
-      codexBin: resolved !== "codex" ? resolved : null,
+      codexBin: resolved,
       nodeBin: process.execPath,
     });
   }
@@ -274,9 +260,14 @@ function closeLockEndpoint(server) {
   });
 }
 
-export async function withLock(fn) {
+export async function withLock(fn, { waitMs = 0, retryMs = 60 } = {}) {
   ensureDirs();
-  const endpoint = await openLockEndpoint();
+  const deadline = Date.now() + Math.max(0, waitMs);
+  let endpoint = await openLockEndpoint();
+  while (!endpoint && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, retryMs));
+    endpoint = await openLockEndpoint();
+  }
   if (!endpoint) {
     logLine("跳过：系统同步锁已被另一个进程持有");
     return { skipped: true, reason: "locked" };
@@ -304,13 +295,4 @@ export async function withLock(fn) {
     } catch {}
     await closeLockEndpoint(endpoint);
   }
-}
-
-export function xmlEscape(value) {
-  return stringValue(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
 }

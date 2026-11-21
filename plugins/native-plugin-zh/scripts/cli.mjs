@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { logLine } from "../lib/paths.mjs";
+import { readPluginConfigState } from "../lib/lifecycle.mjs";
 import {
   bootstrap,
   diagnose,
-  installAutoSync,
-  uninstallAutoSync,
-} from "../lib/tasks.mjs";
+  purgeDataAfterRestore,
+} from "../lib/maintenance.mjs";
+import { cleanupLegacyResidue } from "../lib/migration.mjs";
 import {
   restoreOriginals,
   status,
@@ -33,17 +34,18 @@ function printHelp() {
   node scripts/cli.mjs apply [--translate] [--dry-run] [--json]
   node scripts/cli.mjs sync [--translate] [--dry-run] [--installed-only] [--json]
   node scripts/cli.mjs restore [--force]
-  node scripts/cli.mjs install-task [--force]
-  node scripts/cli.mjs uninstall-task
+  node scripts/cli.mjs uninstall [--purge]
+  node scripts/cli.mjs cleanup-legacy
   node scripts/cli.mjs bootstrap
   node scripts/cli.mjs diagnose [--json]
 
 说明：
   apply         启用覆盖并把已有中文写入来源清单
   sync          重新发现并同步中文；--translate 增量翻译
-  restore       恢复原清单并暂停自动同步
-  install-task  创建登录触发、每 5 分钟运行的隐藏任务
-  bootstrap     同步稳定运行时代码、安装任务并应用缓存
+  restore       手动恢复原清单并暂停中文化
+  uninstall     恢复英文并按需清除本地运行数据
+  cleanup-legacy 删除旧版计划任务和稳定运行目录
+  bootstrap     按插件开关执行一次启停生命周期
 `);
 }
 
@@ -61,8 +63,12 @@ async function main() {
     return;
   }
   if (command === "bootstrap") {
-    const result = await bootstrap({ syncCached: true });
+    const result = await bootstrap();
     console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+  if (command === "cleanup-legacy") {
+    console.log(JSON.stringify(cleanupLegacyResidue(), null, 2));
     return;
   }
   if (command === "diagnose") {
@@ -70,23 +76,46 @@ async function main() {
     return;
   }
   if (command === "restore") {
-    await restoreOriginals({ force: flags.has("force") });
+    cleanupLegacyResidue();
+    await restoreOriginals({
+      force: flags.has("force"),
+      preserveIntent: false,
+      lastPluginConfigEnabled: readPluginConfigState().enabled,
+      reason: "manual-cli",
+      trigger: "cli",
+    });
     return;
   }
-  if (command === "install-task") {
-    const result = installAutoSync({ force: flags.has("force") });
-    console.log(JSON.stringify(result, null, 2));
-    return;
-  }
-  if (command === "uninstall-task") {
-    const result = uninstallAutoSync();
-    console.log(JSON.stringify(result, null, 2));
+  if (command === "uninstall") {
+    cleanupLegacyResidue();
+    const restored = await restoreOriginals({
+      force: flags.has("force"),
+      preserveIntent: false,
+      lastPluginConfigEnabled: readPluginConfigState().enabled,
+      reason: "uninstall",
+      trigger: "cli",
+    });
+    const purgeResult = purgeDataAfterRestore(restored, {
+      purge: flags.has("purge"),
+    });
+    if (flags.has("purge") && !purgeResult.purged) process.exitCode = 1;
+    console.log(
+      JSON.stringify(
+        { restored, ...purgeResult },
+        null,
+        2,
+      ),
+    );
     return;
   }
   if (command === "apply" || command === "sync") {
     const result = await syncWithTranslation({
       dryRun: flags.has("dry-run"),
       enable: command === "apply" && !flags.has("dry-run"),
+      lastPluginConfigEnabled:
+        command === "apply" && !flags.has("dry-run")
+          ? readPluginConfigState().enabled
+          : undefined,
       autoTranslate: flags.has("translate"),
       forceTranslate: flags.has("translate"),
       quiet: flags.has("quiet") || json,

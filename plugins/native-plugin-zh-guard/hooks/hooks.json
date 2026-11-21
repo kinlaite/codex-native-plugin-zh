@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd.exe /d /s /c call \"${PLUGIN_ROOT}\\scripts\\run_guard.cmd\"",
+            "timeout": 30,
+            "statusMessage": "正在检查中文化恢复状态"
+          }
+        ]
+      }
+    ]
+  }
+}
