@@ -1,0 +1,37 @@
+{
+  "name": "native-plugin-zh",
+  "version": "1.0.7",
+  "description": "在 Codex 原生插件界面中直接显示中文名称和介绍，并在 Codex 或目标插件更新后自动恢复中文。",
+  "author": {
+    "name": "Local"
+  },
+  "license": "MIT",
+  "keywords": [
+    "native-ui",
+    "zh-cn",
+    "localization",
+    "plugin-catalog",
+    "manifest-overlay"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "原生插件中文化",
+    "shortDescription": "直接替换 Codex 插件界面的英文介绍",
+    "longDescription": "通过可恢复的本地清单覆盖层，把 Codex 原生插件市场、已安装列表和详情页中的英文名称、简介与详细说明替换为简体中文。翻译按插件 ID、字段和源文本哈希缓存；所有写操作使用系统级互斥，进程异常退出后由系统自动释放锁；独立定时任务会自检动作与触发器，并在 Codex 或目标插件更新后重新发现来源、自动恢复中文。",
+    "developerName": "Local",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "检查原生插件中文化状态，并确保自动同步和中文覆盖正常。"
+    ],
+    "brandColor": "#0F766E",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg",
+    "screenshots": []
+  }
+}

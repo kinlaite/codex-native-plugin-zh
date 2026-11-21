@@ -1,0 +1,20 @@
+{
+  "name": "native-plugin-zh-local",
+  "interface": {
+    "displayName": "原生插件中文化（本地）"
+  },
+  "plugins": [
+    {
+      "name": "native-plugin-zh",
+      "source": {
+        "source": "local",
+        "path": "./plugins/native-plugin-zh"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

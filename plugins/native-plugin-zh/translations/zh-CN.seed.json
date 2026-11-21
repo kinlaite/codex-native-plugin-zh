@@ -1,0 +1,1507 @@
+{
+  "schemaVersion": 1,
+  "locale": "zh-CN",
+  "updatedAt": "2026-11-21T10:38:02.029Z",
+  "plugins": {
+    "openai-bundled/browser": {
+      "displayName": {
+        "sourceHash": "d31de1a5c5c8ba2a210a167cf0d0dc2425c57ea7525f4b73a4b7ab934af79dfc",
+        "text": "浏览器",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "632628b01cc012d290ad01e3a6f1ade3da3926a45ad47804fbabe7f45c62ee96",
+        "text": "控制应用内浏览器",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "2bae6c5f62b20a59d515e4e102f5111486029629a93e8b24ccb8576c3b36710f",
+        "text": "浏览器插件让 ChatGPT 打开并控制应用内浏览器，主要用于本地开发页面和文件。在 ChatGPT 内测试页面时，可以用它导航、检查、点击、输入和截图。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/build-web-apps": {
+      "displayName": {
+        "sourceHash": "2426590eed6c27d88497d74beac9b4122fbfc01b2931133e9cf4cb518e38ca61",
+        "text": "构建 Web 应用",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "f0eb29cf14bbc75b6760eb868fe9aaacbf5b52349799605cba5988d3d556b520",
+        "text": "借助生成素材、浏览器测试、支付和数据库构建前端 Web 应用",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "9d8f6b7e2a674a98a55e2589588e57b8b7e49983ba95bb17475b2b592e07c190",
+        "text": "使用「构建 Web 应用」创建由 Codex 生成视觉素材的前端应用界面；通过浏览器插件和内置应用浏览器验证效果，组合 shadcn/ui，接入 Stripe 支付，并设计或调优 Supabase/Postgres 数据流。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/build-web-data-visualization": {
+      "displayName": {
+        "sourceHash": "dc02d6d55a1557c8797b3afe831305d5f72204fa2488385723914265020c258b",
+        "text": "构建 Web 数据可视化",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "03767a3189ac9ce165bfbb2561b60b87207720d366cbfc78b2c69daba8027f36",
+        "text": "设计、构建、测试并导出 Web 数据可视化",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "83a4496055262c49ad23043bff2987b89e03fb058d56288d688a70b637d33736",
+        "text": "使用「构建 Web 数据可视化」选择、设计、实现、测试并导出浏览器图表、仪表盘、地图、WebGL/Three.js 场景、Canvas/D3 可视化、甘特图、UML/软件图、滚动叙事、报告、PDF 和幻灯片。它强调有来源支撑的数据、无障碍的响应式布局、可通过 URL 分享的分析状态，以及面向高级视觉叙事的“概念优先”设计。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/chrome": {
+      "displayName": {
+        "sourceHash": "c4ef2ec214f90032f39dddfbfe51add7ef2c79da14fb2ccf14cb4c9ad15e5c9a",
+        "text": "Chrome 浏览器",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "70399a6623d17e6cd1fc516ea1e058222f9855aeb3dbc981a8b335e8175b418d",
+        "text": "使用 ChatGPT 控制 Chrome",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "84e74cb6a1bcb2a94449a3e3c5aad500c10e26b2f35d795c94e3f76769e0f03d",
+        "text": "Chrome 插件让 ChatGPT 使用你的 Chrome 浏览器完成需要现有浏览器状态的任务，包括已打开的标签页、页面内容和你已登录的网站。它可以在工作时导航、查看、点击、输入和截图。控制权始终在你手中：ChatGPT 在访问新网站前会先询问，你可以随时停止操作，也可以在设置中管理或移除 Chrome 访问权限。浏览器内容可能包含已登录网站中的敏感信息。使用此插件产生的浏览器数据可能会用于训练，具体取决于你的 OpenAI 账户数据控制设置。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/codex-security": {
+      "displayName": {
+        "sourceHash": "78cba7c057781bf348d9a3abbeea6032ad05cef65f7b4e089fbcd4cffb683241",
+        "text": "Codex 安全",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "e49cfe68fd15debb0d75855102287d2887b8f567d432bc26979bd3058bdf180b",
+        "text": "面向代码库的安全扫描",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "39ccbeab24336350db4b12799c3d194942f06d2e62b6b803d8f8e383f2a65625",
+        "text": "Codex 安全提供可复用的工作流，用于对代码、差异和相关产物进行安全扫描、分析、验证与调查。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/codex-app-tools": {
+      "displayName": {
+        "sourceHash": "f27553ca61e9a07f746cf34fc56f1556bb61bd2bcecc23e53c5540f42c211b76",
+        "text": "Codex 应用工具",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "f74d6781a01f5995090c5895016bb121903aa810a4404c116d42d011c5ddf7e3",
+        "text": "通过一个本地 MCP 服务器提供 Codex 桌面应用工具。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "f74d6781a01f5995090c5895016bb121903aa810a4404c116d42d011c5ddf7e3",
+        "text": "通过一个本地 MCP 服务器提供 Codex 桌面应用工具。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/computer-use": {
+      "displayName": {
+        "sourceHash": "5702cfb270361888fa4eb43daa95dac3ddcf33eee89e1ad750316e4423e4fd44",
+        "text": "计算机操作",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "7d265da22bb9cf950e9e45128bd48b330985d543fc1649e9e74b471826ba0ec7",
+        "text": "控制 Windows 应用",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "6144cf1ebb19b3ea28a7302932c029cbeba033337ff95974c7b0e95d09ed69aa",
+        "text": "Windows 计算机操作让 ChatGPT 使用你电脑上的任意应用，包括浏览器和你允许它访问的文件。工作时它可能会截图或读取页面内容。控制权始终在你手中：你可以选择允许 ChatGPT 访问哪些应用，随时停止操作，并决定是否将截图用于训练。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-primary-runtime/documents": {
+      "displayName": {
+        "sourceHash": "b4e929d8bcfe04189801a8ed61496d177d9e30d1b2826f4c9c4d00b3e705fa8b",
+        "text": "文档",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "e19a1c308437e3e9b8820e5f409b205f0c8ee07959a8498d10e36eee155717d0",
+        "text": "创建和编辑文档",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "84bee5aa94dc84b9e7d49e99bb48e13d9caf52487c592674a687090db279de10",
+        "text": "在本地创建、编辑、检查、渲染、验证并导出 DOCX 文档产物。当最终输出或目标是文档、doc、docs、Word 文件、Google 文档、备忘录、报告或写作产物时，使用「文档」插件。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/github": {
+      "displayName": {
+        "sourceHash": "f911e414cf6bdfc595532ab166b5ba0f63d73c021452fcdacbda363dda6ad8fb",
+        "text": "GitHub",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "84c85328543d625b7f7c9729d5a3f4248aca8d96e119b12cc2016c866875eba4",
+        "text": "分类处理 PR、Issue、CI 和发布流程",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "b036ecdc2cd7c280a9187aa391b15a0df831a11e98bb97ff9029a5ae7bd1552d",
+        "text": "使用 GitHub 插件检查仓库、审查拉取请求、处理反馈、调试失败的 Actions 检查，并通过“连接器优先、必要时回退到 CLI”的工作流准备待审代码变更。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/latex": {
+      "displayName": {
+        "sourceHash": "8f27fdcc77ab5083ddbb91da394e6763985e9b0ec212b99420ac87bbe031d569",
+        "text": "LaTeX",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "43620e664d7bff4775516ca30626002f306745b1df9f209aa039f5fe328966b7",
+        "text": "使用 TeX 工具编译 LaTeX",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "ce5340508fdcc7f270bf7b382ef10099c2b7c8cdb921d72a1458a84b9236d8eb",
+        "text": "面向 Codex 的 LaTeX 工作流：简单项目优先使用内置 Tectonic；较完整项目回退到检测到的 TeX Live 或 MacTeX；验证本地 LaTeX 环境是否就绪；仅当没有可用系统安装时，才可选安装由 Codex 管理的完整 TeX Live 运行时。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/openai-developers": {
+      "displayName": {
+        "sourceHash": "c8b2868187118ad95aa55eb1a0ca2cc3e1c88970322a0928c21f5fefe09b100d",
+        "text": "OpenAI 开发者",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "f3f734bbad77187b58df098695e1b0e81e56a45819c11c50a2fdc612bdea77b2",
+        "text": "遵循 OpenAI 最佳实践开发 AI 应用、智能体和 ChatGPT Apps",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "4a010693bf2a1a8a6dc508e859f6b50af81102a9d69d4eadd9767837fd294b9b",
+        "text": "在 Codex 中使用「OpenAI 开发者」构建 AI 应用、智能体和 ChatGPT Apps，借助 OpenAI 文档、OpenAI API、Apps SDK 和 Agents SDK。连接 OpenAI 平台（platform.openai.com），即可用真实 OpenAI API 密钥立即运行 Codex 构建的应用。通过 Deployment Manager 运行并在本地部署 Agents SDK 项目，搭建 ChatGPT Apps 脚手架，并准备 ChatGPT Apps 提交产物。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-primary-runtime/pdf": {
+      "displayName": {
+        "sourceHash": "1d393b0081b632c54654eb08c345ff76b92ae4efe0768b4c0f64b9ebbe920492",
+        "text": "PDF",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "30d53c7b2bd528a518d70fe2fde3142a0db65c90677cf0fa2fc2e6e175d703b3",
+        "text": "读取、创建并验证 PDF",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "4d6b72d6f6b10ef70ea3934e7a2888a74f00c537e5da3b91a3d43500ae833694",
+        "text": "在本地读取、创建、检查、渲染、验证并提取 PDF 文件内容。当最终输出或目标是 PDF 文件且视觉版式保真度很重要时，使用「PDF」插件。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-primary-runtime/presentations": {
+      "displayName": {
+        "sourceHash": "cf31f39501ec79cc84987e224fc9dfad7940465184c676054b3dd7b91e947f40",
+        "text": "演示文稿",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "bf1fa947bbc2f8e70b31390ab7d888f13a4cd0c1de1a0471de8e0d3ba59855da",
+        "text": "创建和编辑演示文稿",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "77976eb49344715f635d221cdc9bea318587b14cdcbbb924c00d3dddbb21f0a2",
+        "text": "在本地创建、编辑、检查、渲染、验证并导出演示幻灯片，包括 PPTX 制作以及原生 Google 幻灯片交接指引。当最终输出或目标是 deck、slidedeck、演示文稿、幻灯片、PowerPoint、Google 幻灯片、演讲者备注或视觉幻灯片修复时，使用「演示文稿」插件。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-primary-runtime/spreadsheets": {
+      "displayName": {
+        "sourceHash": "fdae6602c2bebdcc277f82edeb2c3d448d5695dc2fc6650fe58dcabc3f179ad9",
+        "text": "电子表格",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "3b286671a4faf6f237be1b3d39a8b8724ecdbfec67d85ab33c97a33c4590d1cc",
+        "text": "创建和编辑电子表格",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "a485b1dd05e0e55ad26125f4c13aa2dde4ac477945c74e59c0cfbf5e52d0ff3b",
+        "text": "在本地创建、编辑、检查、渲染、验证并导出 XLSX、CSV 和 TSV 电子表格，包括为原生 Google 表格交接而进行的本地 XLSX 制作。当最终输出或目标是电子表格、工作簿、工作表、Google 表格或 CSV 文件时，使用「电子表格」插件。若要在 Microsoft Excel 应用中处理已打开的电子表格，请通过 ChatGPT 加载项使用「Excel 实时控制」。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/superpowers": {
+      "displayName": {
+        "sourceHash": "543bd5e73b299ba5893091a8cf373849d7637faaf321192e6d7b1d02a6703d30",
+        "text": "Superpowers 开发流程",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "0fa6901087d0b906fcd036629db8a9e80c69bee63d0c393adc1c4e6c9d9d98d5",
+        "text": "规划、开发和调试代码",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "6dd2b50c46a5b8a336dd018010de15a81707ed7897296be6a6ceedd393d41f50",
+        "text": "使用 Superpowers 引导智能体完成头脑风暴、实现规划、测试驱动开发、系统化调试、并行执行、代码审查和分支收尾等工作流。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-primary-runtime/template-creator": {
+      "displayName": {
+        "sourceHash": "5a0104701b839930286ada48a8f85d9882d4fe9da61a51571ba978dd50f1a8a0",
+        "text": "模板创建器",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "bb55e161042fa47620f0ba5f49e31d74f6bd908ab19ff8d690d49f778ac31983",
+        "text": "从参考内容创建或更新可复用模板",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "a594db79ca0a9414fcff89ce35a20292b350b334ab8dc3b959d52e12440cff83",
+        "text": "使用「模板创建器」从文档、电子表格、演示文稿、Google 文档/幻灯片/表格链接、ImageGen 或 Product Design 图片、电子邮件、Slack 消息和 Site 项目中创建可复用模板。模板创建器会保留参考内容的结构、语气、版式和风格，让你随时快速生成新版本。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/unified-computer-use": {
+      "displayName": {
+        "sourceHash": "b26c10b3d6623bf72687c5077add44489e22f8054fd6c2c758b453f61141c658",
+        "text": "统一计算机操作",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "d958081605e29f773377bdadc1f3ddfd8432211a75aadf5e562f24eec814c9ea",
+        "text": "由应用管理的浏览器自动化运行时。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "d958081605e29f773377bdadc1f3ddfd8432211a75aadf5e562f24eec814c9ea",
+        "text": "由应用管理的浏览器自动化运行时。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-bundled/visualize": {
+      "displayName": {
+        "sourceHash": "4de24991ad621ce1c30d3c10ce42d692934b1db0157b3f6bb0b9c668532c754c",
+        "text": "可视化",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "e1da3292dd14979700709eae8acf907a9481f1fa514a6c14e8a07a3d2c8a5e1d",
+        "text": "创建交互式可视化",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "2bdcee7ef0bdf7f04f4ad4cd90eb5334fb3dae7326fde822850ff717bcb74631",
+        "text": "直接在对话中创建交互式图表、地图、示意图、模拟、3D 模型、数据浏览器和 UI 预览。可以筛选数据、选择细节、比较场景并调整输入，实时查看结果变化。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "plugin-i18n-local/plugin-translator": {
+      "displayName": {
+        "sourceHash": "e2c154a80b3a8245d55f931e0c8eced3bbd7be9803b29180605b537431018736",
+        "text": "插件翻译",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "shortDescription": {
+        "sourceHash": "4757f013e14636351d48a700346e4de812a1cdc71414d60acd9e35bda4bc6cd2",
+        "text": "把 Codex 插件介绍整理成中文目录，并在插件更新后只翻译变化内容。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      },
+      "longDescription": {
+        "sourceHash": "1d3fc4c4f6ab454494c0607d5449b64c74759df435aaa8ddf0604d9f386ab370",
+        "text": "扫描本机已安装的 Codex 插件，生成可搜索的中文插件目录。翻译按插件 ID、字段和源文本哈希缓存；Codex 更新不会清除缓存，插件更新后只补译新增或变化的字段。",
+        "origin": "seed",
+        "updatedAt": "2026-11-20T18:09:08.981Z"
+      }
+    },
+    "openai-api-curated/game-studio": {
+      "displayName": {
+        "sourceHash": "71c924c5abd790af1fe86a9d578fe17182ed3aa1a81bace17185b1dc3ad5d661",
+        "text": "Game Studio",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "shortDescription": {
+        "sourceHash": "65aafc077b8cb52419ae180b7848ad120341600e863d558ba609011245cffe00",
+        "text": "设计、制作原型并发布浏览器游戏",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "longDescription": {
+        "sourceHash": "44d074d85d04cf33ea473598e7dd536a8d224058ebf3379b1f54c970f7848800",
+        "text": "借助针对玩法系统、UI、资源管线和试玩测试的引导式工作流，在 2D 和 3D 项目中规划、制作原型并构建浏览器游戏。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      }
+    },
+    "openai-api-curated/circleci": {
+      "displayName": {
+        "sourceHash": "c5df5b65913982bf608a49c127281c04e47247ffe7fca989dfa79b6f86bad0e5",
+        "text": "CircleCI",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "shortDescription": {
+        "sourceHash": "b6a14bc27bdbcd631254a6d2555b131cc5964779c8b9b33f24d269127a77a524",
+        "text": "构建、测试并部署任何应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "longDescription": {
+        "sourceHash": "34e60ef0001887101fa2af127a48e4b2106749b616d8057e4075512c48e7b6cd",
+        "text": "将测试、部署和 CI 最佳实践引入 Codex",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      }
+    },
+    "openai-api-curated/sentry": {
+      "displayName": {
+        "sourceHash": "5ece526b2e72c2e5004c95dcada14bb8fc8ecbc099e22d17c5afcdb853be46a2",
+        "text": "Sentry",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "shortDescription": {
+        "sourceHash": "38dac73c6a2e985a0b549769e3ab64d8cd1c49e1f109b630011139c653a56dff",
+        "text": "查看最近的 Sentry 问题和事件",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      },
+      "longDescription": {
+        "sourceHash": "ac023328b2a06b94688c4e3a9611adeca745339ecf514deb2fd4c2949121deeb",
+        "text": "使用 Sentry 技能，通过只读工作流检查最近的问题、审阅事件并汇总生产环境错误。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.653Z"
+      }
+    },
+    "openai-api-curated/build-ios-apps": {
+      "displayName": {
+        "sourceHash": "9514d7b4ac4742a35ddd04c0d6602ae5136bc658fa921e2f24095bf5c765a779",
+        "text": "构建 iOS 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "shortDescription": {
+        "sourceHash": "614aa26ff9d15f34626954b862803406b10f6ce6c17c134487c54db841ff76a9",
+        "text": "借助 App Intents、SwiftUI 和 Xcode 工作流构建、完善和调试 iOS 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "longDescription": {
+        "sourceHash": "b9e3ea48863701fe120245b1d290fbc46fc4fe2b8c355186cb5b4768432f6637",
+        "text": "使用“构建 iOS 应用”来设计 App Intents 和 App Shortcuts，构建或重构 SwiftUI 界面，在 Codex 应用内浏览器中渲染 SwiftUI 预览，采用 Liquid Glass 等现代 iOS 模式，审核运行时性能，采集 ETTrace 性能分析数据，排查内存泄漏，并借助由 XcodeBuildMCP 支持的工作流在模拟器上调试应用。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      }
+    },
+    "openai-api-curated/build-macos-apps": {
+      "displayName": {
+        "sourceHash": "6e81748fc07da1831d6399cb6b40732df13f8acc6dee40f516be0fcb06be172e",
+        "text": "构建 macOS 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "shortDescription": {
+        "sourceHash": "a038597e817869ec8b8c26c5c9e371bff548cca12c1839966b884d5bd41a2996",
+        "text": "借助 SwiftUI 和 AppKit 指南构建、调试、监测并实现 macOS 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "longDescription": {
+        "sourceHash": "e17191db7839a762a0b22ac2143d472b56aae3399fec127719f69a32ed082248",
+        "text": "macOS 开发工作流可用于发现本地项目、构建和运行桌面应用、实现原生 SwiftUI 场景、在必要时桥接至 AppKit、添加轻量级 Logger 遥测、排查测试失败、检查签名与授权，并调试桌面端特有的构建或运行时错误。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      }
+    },
+    "openai-api-curated/test-android-apps": {
+      "displayName": {
+        "sourceHash": "8cc93b9b5b7f72ab08d6af854c110d14aab4c197a865d920d8b0f2a263114fb3",
+        "text": "测试 Android 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "shortDescription": {
+        "sourceHash": "df6418746a951c7ffea7de6c11c2c9d3f05699f011639bc5d41eb4fafd5a3d6a",
+        "text": "在 Android 模拟器上复现问题、检查 UI 并采集性能证据",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "longDescription": {
+        "sourceHash": "083cb357be69fa809fc340f1c217775e7e1463c5c91bf521e327e62c4a08b882",
+        "text": "使用“测试 Android 应用”来构建并安装应用变体，通过 adb 输入事件操作已启动的 Android 模拟器，检查 UI 树、截取屏幕截图、收集 logcat 输出，并在复现问题时采集 Simpleperf、Perfetto、gfxinfo 或内存/泄漏证据。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      }
+    },
+    "openai-api-curated/life-science-research": {
+      "displayName": {
+        "sourceHash": "6193c3e0e676baa0a5da94e3c7cf0f4e5537fe5d507310e06cf49f5405e72d4d",
+        "text": "生命科学研究",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "shortDescription": {
+        "sourceHash": "9a06ecc65333d069732c11bae00c637b4e590a3a221f604f60953990b66f8f97",
+        "text": "通用生命科学研究，支持任务路由、证据综合以及可选的并行子代理分析",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:40:32.654Z"
+      },
+      "longDescription": {
+        "sourceHash": "d9f7fb6679aee3b0d463af3a8d5f2e8ab232156003a15c99aeb7c1de88ca33c6",
+        "text": "面向生命科学研究的内部工作流，帮助 Codex 解读研究问题、标准化相关实体、选择合适的技能，并跨公共资源综合形成有证据支撑的答案。涵盖人类遗传学、功能基因组学、基因表达、通路、蛋白质结构、化学、药理学、文献、临床证据和公开研究数据发现，并提供 research-router 入口处理广泛任务；当各证据路径彼此独立时，可选由子智能体协助并行处理。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/zotero": {
+      "displayName": {
+        "sourceHash": "0b04311d284172ecf6476f69bc3859d29c6cde1dfeb69c3c8c22da7b0e08a389",
+        "text": "Zotero",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "978386fecfc96749a23f177b62413a65922c672dd441e2d0928d3717f3752a3a",
+        "text": "从 Zotero 查找论文并添加引用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "023b0a2e7007a50819ff0958728125ddeb436adf79de7db4d4a17d0158b20c12",
+        "text": "将 Codex 连接到 Zotero 桌面库，以便查找已保存的论文、导出 BibTeX、向草稿添加引用键、按需读取已索引的附件文本，并在你批准后将新的文献记录导入 Zotero。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/expo": {
+      "displayName": {
+        "sourceHash": "f5e5cae536b49d394e1e72d4368d64b00a23298ec5ae11f3a9102a540e2532dc",
+        "text": "Expo",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "1c029674593c6d3061219b989cf49d6cb3f1736b16b91948039822ad4def8db3",
+        "text": "构建、部署、升级和调试 Expo 与 React Native 应用",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "166d65a6194c968aa4281f93b87384b8c3bdf4661a852b9a29b0af5bc108ee11",
+        "text": "由 Expo 官方编写的技能，涵盖构建 Expo Router UI、编写 API 路由、配置数据获取与样式、编写 Expo 原生模块、创建开发客户端、升级 Expo SDK、为 Codex 应用的“运行”操作完成接入，以及借助 EAS 工作流、构建、托管、TestFlight、App Store 和 Play Store 指南部署 Expo 应用。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/coderabbit": {
+      "displayName": {
+        "sourceHash": "787d99ce6b0ccd6554d8138adbf8a0d536f7f214dffe6d61fc32d232ef5ae0ac",
+        "text": "CodeRabbit",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "81f21f4227f56d4a457c9e5b1b73ed533dfc48d0134670eba9700a26c84c7c92",
+        "text": "对当前更改运行 AI 驱动的代码审查",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "62ed98a6ff71163ff110dd1ae8b45153ee1a3842991d6757c3872f79ef2dc6af",
+        "text": "在 Codex 中运行 CodeRabbit 审查工作流，检查差异、呈现可操作的问题，并将审查输出转化为后续修复。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/remotion": {
+      "displayName": {
+        "sourceHash": "4fa06acf0d1d3ded65b87bb63ef160ffc0ae6b2201ac37def11e979771af8e23",
+        "text": "Remotion",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "f8d7df2d891dd428b9ff6b0fb697747bd214f320846569887d79fd80195e08c6",
+        "text": "借助智能体制作视频",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "2ccc7ee9406eefd86739779768c5b2c30175ff954620111890c97f6f96a63f70",
+        "text": "使用 Remotion 和 React 以编程方式制作视频，涵盖动画、时序、音频、字幕、3D、转场、图表、文字效果等。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/plugin-eval": {
+      "displayName": {
+        "sourceHash": "4a38fe1855df639412e90424df869acbf71627099afafa9ed590c7adfde468df",
+        "text": "Plugin Eval",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "7d4f173dca2069d3d9069c7d36a22a151f963051dbd071d817dd7c516e10be5d",
+        "text": "从聊天开始，再在本地评估或运行基准测试",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "07480a0ebf7e4fa6ab0018eb712cd82dcdeb7d2112843e4610c535dd7095e815",
+        "text": "让 Codex 评估插件或技能，全面分析指定插件（例如 game-studio），解释评分依据，指出应优先修复的内容，说明其 token 预算，测量实际 token 用量，对插件进行基准测试，或告诉你下一步该运行什么。Plugin Eval 让流程保持对工程师友好：先从自然语言聊天请求开始，再使用本地 `plugin-eval start` 入口或其推荐的路由工作流命令。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/temporal": {
+      "displayName": {
+        "sourceHash": "840fec76c60dc83e21ffdda6a44f4db679ad6d6918080bed1799c8f38bbdadfb",
+        "text": "Temporal",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "4c4bd380db6c3e35c76f3140856d7331bd2bc37389352f52784fc9f16308c5c5",
+        "text": "使用 Temporal 进行开发",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "longDescription": {
+        "sourceHash": "e8435f9c48a8b8e5c5f3b47951269c5acdd926a1e217a572a38891988151fdab",
+        "text": "提供使用 Temporal 的全面指南，涵盖使用 Python、TypeScript、Go 和 Java SDK 开发工作流、活动和 Worker；使用 Temporal CLI 进行本地开发与运维；运行和管理自托管 Temporal Server；以及借助 Temporal Cloud 进行生产部署。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      }
+    },
+    "openai-api-curated/hyperframes": {
+      "displayName": {
+        "sourceHash": "967642bf51c64897143a9fa12ebc71295c9f6b103330dbb9b10a00eec7952ee1",
+        "text": "HyperFrames by HeyGen",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:42:16.836Z"
+      },
+      "shortDescription": {
+        "sourceHash": "614a162636e1fee424a27d44144f364cdbac57690f26414c466194cad3119636",
+        "text": "编写 HTML，渲染视频",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "8007d07f405eea5153a09566c96c366482974838a20474c71b0fcf2c6327f628",
+        "text": "使用 HyperFrames 从 HTML 构建视频。使用 HTML + CSS + GSAP 创作合成内容，通过 CLI 执行 init/preview/render/transcribe/tts，安装可复用的 registry 区块和组件，遵循 GSAP 动画参考，并通过 7 步捕获到视频流程将任意网站转换为视频。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/twilio-developer-kit": {
+      "displayName": {
+        "sourceHash": "4d7ad5061381c0af78a7c17d72018edf91c27e01320b1265c5bf3e1f55e2498d",
+        "text": "Twilio Developer Kit",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "8da8f7ae55ccfbf7cbd041aec00fdafaeb71904b094a9db134b9adf40150abbc",
+        "text": "用于在 Twilio 上构建、调试和发布的 Skills",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "5341f98552fd666594c47ff9fb612054d9c23c54a01e7146560b9ccd84ebf931",
+        "text": "以流程化知识引导 AI 编程智能体为各类用例选择正确的 Twilio APIs。涵盖渠道选择、生产环境最佳实践、合规要求，以及 Messaging、Voice、Verify、SendGrid 和 30+ 款产品中的常见陷阱。Skills 采用渐进式披露架构——智能体在启动时仅看到轻量元数据，只有任务匹配时才会加载完整指南。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/mixpanel-headless": {
+      "displayName": {
+        "sourceHash": "2f29de846b43d8068cffac1bbb48cc0d624111bccf1f898ad57b7cf1a088af0c",
+        "text": "Mixpanel Headless",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "56373b82885e7d0a64d2c3b62708c5a0c5d3801a5ee55ee6a2fcaa088aea0a70",
+        "text": "使用 Python 分析 Mixpanel 数据",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "2b19e47e89b9fdd1e96b3203b2bacbf16b26445d3cb28c0a332073a56f45c8d1",
+        "text": "使用 Mixpanel Headless 技能安装并认证 mixpanel_headless Python SDK，探索 Mixpanel 数据结构，运行细分、漏斗、留存、流程和用户画像分析，并在 Codex 中构建或查看 Mixpanel 仪表板。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/nvidia": {
+      "displayName": {
+        "sourceHash": "0890f456684a70f1a9f1dbcee40c1fe847b76f338581a9a1d9202c76b1c175f4",
+        "text": "NVIDIA",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "1b90f1deeffb6ca9a106f27063d368f9fe4bc17790e87688cb5ae6688707c2bb",
+        "text": "为 NVIDIA AI、GPU、机器人、仿真和 3D 工作流提供引导式帮助。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "bd446f5e7eac9efb75b9d7e549ddd7d8cd3a8e6a1af57c6743393b5b1b1f9620",
+        "text": "NVIDIA 生态系统涵盖 GPU 加速、CUDA、AI 智能体、推理、机器人、Physical AI、Omniverse 和仿真。此插件可帮助你理解各个环节、选择路径、验证环境配置，并构建实用的 NVIDIA 驱动工作流。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/ngs-analysis": {
+      "displayName": {
+        "sourceHash": "e6bec7a6cf1f1085241916368a38fc5f187647cd93357687d85cd8d6f2bb3a5d",
+        "text": "生命科学 NGS 分析",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "cbbbf1daaf0904e7c9ba2cca790d59234b76f853de0d96da6ce4f5672c118aff",
+        "text": "面向测序分析的引导式 NGS 路由与本地执行",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "8b1925f99e41cf5b839df1690845e075aad7cdfba21388aa049004948efce7b4",
+        "text": "用于下一代测序工作流的引导式信息收集、路由和执行插件。它可帮助 Codex 检查本地测序输入，仅询问缺失的、针对具体检测方法的问题，尽可能选择公开或可自由获取且可在运行时安装的软件包，在任何安装前检查现有工具是否可用，并执行受支持的本地工作流，提供验证、日志、清单、QC 报告和产物索引。它包含更深入的决策技能，涵盖 BCL 解复用、FASTQ QC 执行与解读、胚系、体细胞和 UMI-panel DNA 变异、bulk RNA-seq 计数生成与差异表达、ATAC-seq、ChIP-seq/CUT&RUN/CUT&Tag，以及内置的计数后 scRNA-seq QC。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/magicpath": {
+      "displayName": {
+        "sourceHash": "fbf5dbdacb6eba10f9283838c84db03b3b30ff76b727e4f0b3b9b425e659f3ca",
+        "text": "MagicPath",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "95781b2acea1785f0bd5d1c0fd4ffca6155e3404d5e644fc31550afe6ceedff1",
+        "text": "在 Codex 中查找、安装和创作 MagicPath UI 组件",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "69804d3667dab1fe92b4bb2c9778394236fbf1c8597cb8dd27f25cf1d6561094",
+        "text": "通过 magicpath-ai CLI 使用 MagicPath，搜索 UI 组件，检查源代码，将 React 和 TypeScript 组件安装到应用中，使用团队项目和主题，并从本地代码创建或编辑画布组件。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/openai-ads-conversions": {
+      "displayName": {
+        "sourceHash": "6612cfc4298484bec42f6033b4d4aa1dc2d85dd9c73dd68ae0296608a2e96e5c",
+        "text": "OpenAI Ads Conversions",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "shortDescription": {
+        "sourceHash": "f91cdd193554a932676703f1d7b611e91ad83cf4dc066cdcd5167b79cbba4c35",
+        "text": "设置 OpenAI Ads Pixel 和 CAPI 跟踪",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      },
+      "longDescription": {
+        "sourceHash": "15296d8a2567cad3758f36b3b1d2f6864bbe20a2b24451d06a17273e9417baae",
+        "text": "使用 OpenAI Ads Conversions 引导 Codex 在代码库中添加或扩展 Measurement Pixel 和可选的 Conversions API 埋点，并提供本地验证辅助工具以及关于安全处理密钥、去重、归因上下文和配置报告的指南。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:43:57.916Z"
+      }
+    },
+    "openai-api-curated/boltz-api-cli": {
+      "displayName": {
+        "sourceHash": "fdecfa22a8a0e039abd4b95b353f5095d71ef6a671156e0331879172968b25bc",
+        "text": "Boltz",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "95331bd87692938cfd6451fb38e23309c74dce2a1f697a7296db40bc70d07363",
+        "text": "预测结构、筛选分子和蛋白质并设计结合体",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "8bb91841cf3b29d5dbf44d65da2781520113dd21891ed0244ce7529dffa06cf3",
+        "text": "使用 Codex 中的 Boltz 开展生物分子建模工作流：预测蛋白质、RNA、DNA 和配体复合物的结构与结合情况；针对靶点对小分子或蛋白质文库进行排序；设计新型小分子、多肽、抗体、纳米抗体或自定义蛋白质结合体，并输出结构与置信度指标。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/linear": {
+      "displayName": {
+        "sourceHash": "e6950b45d25c2027b1ecae90490570d89bb0285e606df6ea24c16377fb0f2cf1",
+        "text": "Linear",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "0f27359e78e2a0715e06540a835bc3fd2673269f307609f999d71300922a40c8",
+        "text": "规划并构建产品",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "5a6d2f920d266cdf62c59dd0820d278857fe972bf3afbffb5341a0cf89588e15",
+        "text": "通过 Codex 管理 Linear 中的问题、项目和团队工作流。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/figma": {
+      "displayName": {
+        "sourceHash": "ce46041005a8aa0d3b0c9ab36dd4d08cf7bf4c2d913e6ba1b19bf59a7eb424fb",
+        "text": "Figma",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "8cd64fc844f75a980177275c91f7b446799937d730b9d83a2761b79efedfe7e0",
+        "text": "Figma 设计转代码工作流",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "6f0993b49689fa7994e314942872746b79de8f603c26c02bfc69a636d0dd922d",
+        "text": "Figma 工作流支持在代码中实现设计、为已发布的 Figma 组件创建 Code Connect 模板，并生成项目专属的设计系统规则，以便重复开展 Figma 转代码工作。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/notion": {
+      "displayName": {
+        "sourceHash": "73bcfe98830b53a1cabd2fa68c6ba8819adcfb9b0566f7ed5d455582d47973ed",
+        "text": "Notion",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "9ff513fdd606bf1cc1eefe40ad6319245f66e04606f51cb912901ee895528536",
+        "text": "用于规格、调研、会议和知识沉淀的 Notion 工作流",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "a2c593406d08d824f70a6aff9d204f7f64447bc5f53ab3097b31ef2f3da48bbb",
+        "text": "Notion 工作流可用于将规格转化为实施计划、将研究成果整合为结构化文档、结合工作区上下文准备会议材料，并将决策或对话沉淀为长期保存的知识页面。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/slack": {
+      "displayName": {
+        "sourceHash": "b27fb38ba323745c91fe7fd9021605430d43bdb7d3be765266e29364d103e26f",
+        "text": "Slack",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "e2905585fa01ce5b8ccfdd528e2386c5403440e0f5a4ffedf164188a99e0419a",
+        "text": "读取并管理 Slack",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "bc7e42611337ad5126738c504e46fbf8c8e8e6faf9e4e37a8ec7e16afc3e785f",
+        "text": "借助已连接的 Slack 集成，汇总频道内容、起草消息并整理团队对话。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/atlassian-rovo": {
+      "displayName": {
+        "sourceHash": "7b0caaaefad46deb4946ce8108f9b486b6fdd29ebcbc65e855909031915d6923",
+        "text": "Atlassian Rovo",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "edf5fcb872dffac08fe307d0c3322eaac5beb36fb467873d21ea8cd03944ffcf",
+        "text": "管理 Jira 和 Confluence",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "61f22486782963c575545a651e189ce6d1699fcfab9253ddf88423210c4c57ef",
+        "text": "快速管理 Jira 和 Confluence",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      }
+    },
+    "openai-api-curated/datadog": {
+      "displayName": {
+        "sourceHash": "e9dc6ff29240c721cf025565b1857dd28d015df850ad85ebe7b76d0981fc5129",
+        "text": "Datadog（预览）",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "shortDescription": {
+        "sourceHash": "8bebd635d297b4767e700239507999cf8c4c96a9662df384c237377de8c9734d",
+        "text": "搜索并处理你的数据",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:44:46.919Z"
+      },
+      "longDescription": {
+        "sourceHash": "6b1e361215314c71327ee64d50c6767fcc34614857ba6f7611083fdb9d37238c",
+        "text": "仅面向 US1 客户提供。使用自然语言，直接在 ChatGPT 中分析、调查并处理 Datadog 遥测数据。你可以针对生产应用提问，并识别、可视化及修复关键服务中的问题。运行智能体循环，确保始终维持良好的可观测性和服务管理水平。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/dropbox": {
+      "displayName": {
+        "sourceHash": "4750d0a12e03a1be0f78518ae2f73538e8b2748c4284244504ff3bc3fd31c3a9",
+        "text": "Dropbox",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "02c2ee1ee434544d22812be1db6363e0c01ad5c52fc224b620da9c793af88694",
+        "text": "访问、保存和分享文件",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "970cdd9f4649216a71f71b5c80300df6b05eeb3fbd3e7c93a3bf9f74e36e2232",
+        "text": "ChatGPT 的 Dropbox 插件可将你的 Dropbox 文件直接连接到 ChatGPT。无需切换工具，即可访问文件、将 ChatGPT 生成的内容保存到 Dropbox，并创建分享链接。所有操作均遵循你现有的 Dropbox 权限，ChatGPT 只会处理你已有访问权限的文件。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/granola": {
+      "displayName": {
+        "sourceHash": "ed230e77dea841b44d4ba92aec6d2a775260435ebf2323ce0cbaa0532e811fd8",
+        "text": "Granola",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "3e8e291c8ac749c7b3e00a673f3823e9505994fee201fc24dc6881e5f86a8287",
+        "text": "添加会议背景信息",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "10b8305acf68e8c66a3611b1be61a017e052a004d884ecb9e6b6199f7ff5e7e1",
+        "text": "Granola MCP 将你的会议历史连接到 Codex，让助手在工作时从过往对话中获取真实背景信息。\n\n当你正在处理更大型的任务时，可使用 MCP：\n\n-   编写 PRD 或提案：从相关会议中直接提取客户反馈、利益相关者意见和决策，融入你的草稿\n    \n-   制作演示文稿或报告：将多次对话中的洞见与你的其他研究和数据相结合\n    \n-   结合背景编写代码：让 AI 了解规划会议中讨论的项目背景、需求和技术决策\n    \n-   战略分析：将会议洞见与文档、数据及其他来源整合，进行综合分析\n    \n工作原理：\n\n你的 AI 助手可以按主题、人员、公司或时间范围搜索 Granola 会议，并在回答中引用具体对话。无需再切换标签页去查找“客户说了什么”或“我们何时做出的决定”。\n\n不同之处：\n\n你的 AI 会自动从会议历史中提取所需信息，而无需将会议笔记复制粘贴到提示词中。你可以专注于工作，无需分心查找资料或整理背景。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/vercel": {
+      "displayName": {
+        "sourceHash": "68edc75c015e2e10f7fef2ac7849c583dffff28e183dcc61ceb53d7ecabdc62f",
+        "text": "Vercel",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "64c4151296a86b67cd3cee8e9f4e1cd84e155acb4ca0f5c91d8267e1c5399eb2",
+        "text": "构建并部署 Web 应用和智能体",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "4074d17a5093edf6e362668d09e97ed1072147f45faafdd5377c3eccee3c989a",
+        "text": "通过精选技能和已连接的 Vercel 应用，将 Vercel 生态指南引入 Codex。该项目将上游 vercel/vercel-plugin 的技能、智能体和命令打包到本地 `vercel` 插件标识下，供 Codex 插件市场使用。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/canva": {
+      "displayName": {
+        "sourceHash": "2f73335c712c9214b73a4ac18ffa87fd17f0dc53d2f3b84b98cc44abd5dcd00e",
+        "text": "Canva",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "0ec8edf550e797e0cc983d27665cf60f666381e9efed023cb899e37cf8a2e4e5",
+        "text": "创建、审阅和编辑设计",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "bef19744bfefdb3d7c54fed711fe9243a5dd92411546d25385337ba97db2cb53",
+        "text": "将你的 Canva 设计工作流引入 Codex，通过自然对话创建、完善和审阅设计。\n可用技能：\n为社交媒体调整尺寸：一步将设计适配 Facebook、Instagram 和 LinkedIn。\n批量创建：使用品牌模板，根据电子表格数据生成多个设计。\n编辑设计：更新文本、媒体和格式，或重新定位和调整元素大小。\n获取设计反馈：获得关于视觉层级、布局、可读性、一致性和无障碍性的结构化反馈。\n落实反馈：查看评论串并应用明确、可执行的修改。\n品牌检查：对照你的 Brand Kit 检查颜色、字体、Logo 使用和文案。\n安装后，可用自然语言描述需求，或通过 @Canva 直接调用 Canva。\n试试以下提示词：\n- @Canva，将此设计调整为社交媒体尺寸。\n- @Canva，使用我的品牌模板根据此电子表格创建设计。\n- @Canva，更新此设计中的主标题。\n- @Canva，审阅此设计的视觉层级和可读性。\n- @Canva，落实评论串中的反馈。\n- @Canva，根据我的 Brand Kit 检查此设计。\n\n要求：连接 Canva 账户才能使用此插件。批量创建需要符合条件的 Canva Enterprise 套餐。\n\n想更亲自动手？可立即在 Canva 强大的编辑器中打开设计，进行最后润色。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/cloudflare": {
+      "displayName": {
+        "sourceHash": "f9191531404c401686ab9b96e57d6a30825f3487b3375c8b90a2245b65f40551",
+        "text": "Cloudflare",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "55d8a43abb8a2ab8f35c3a77da9c56c388f00fc3dd5b2893d5f952c7f90ef817",
+        "text": "Cloudflare 平台指南与官方 MCP",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "d9436c38027f95220bd77022ecc8c6ca8481c19df00380e6fad6bdcc576e5eb8",
+        "text": "通过涵盖 Cloudflare 整体平台、Wrangler CLI 和 Agents SDK 的精选技能，以及官方 Cloudflare API MCP 服务器，为 Codex 引入 Cloudflare 平台指南。借助该服务器，可经身份验证访问 Workers、Pages、存储、AI、网络、安全和分析服务中的实时账户数据与工作流。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/monday-com": {
+      "displayName": {
+        "sourceHash": "df9ba8c57b8c27950e198c6adda0f1874ba23a038e45b8a0c0a7c66e63e1e992",
+        "text": "monday.com",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "d76b1d553e706d756bdc6ca2eccae3a649767392bb3d41d58e5d786fed1aeb6b",
+        "text": "管理项目、任务和 CRM",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "longDescription": {
+        "sourceHash": "5681125862835aa266591b7b406369d3cf30c544c0a37cd5d5ec2a7e96363dde",
+        "text": "monday.com AI Connector 将核心平台能力直接提供给智能体和 AI 助手。它支持搜索看板、创建和更新条目及列、分配负责人、设置时间线以及发布更新，从而在各部门和团队中支持广泛的工作管理与 CRM 用例。\n\n由人员和智能体组成的团队将 monday.com 用作任务跟踪和项目跟踪中心：策划营销活动与各类活动，跟踪里程碑、依赖关系与工作量，管理审批工作流和请求受理，并在项目和项目组合之间共享状态更新；同时也可用作管理潜在客户、联系人和交易的 CRM。\n\n除日常工作管理外，该连接器还让智能体能够使用 monday.com 官方知识库回答问题、规划并构建自动化和多步骤工作流、运行和保存可复用的代码操作，以及配置其他 monday.com 智能体。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      }
+    },
+    "openai-api-curated/posthog": {
+      "displayName": {
+        "sourceHash": "20f873ce6068f2e142012c5cc84ff33bc12be83f34f100429fbef752be7b210f",
+        "text": "PostHog",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:47:25.441Z"
+      },
+      "shortDescription": {
+        "sourceHash": "b1aa0ca3fb1fbfd4ffafd5a5d18bcf54241d88aa43c723e1ee5b6d3e29dcea49",
+        "text": "分析你的产品数据",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "0202c12358c761e53fd7890d14b1f51383a0585fcb4665ff54a3dbdabbfd9f48",
+        "text": "PostHog 让你的 AI 智能体直接访问产品分析、功能开关、实验、错误跟踪、问卷、日志和 LLM 分析。你可以针对数据提问、创建洞察、切换功能开关、分析错误、搜索文档等，全部在聊天中完成。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/stripe": {
+      "displayName": {
+        "sourceHash": "961a6062ba1ba2d8608e5eea8be67483d936f2f9f41e312217407198e14f087c",
+        "text": "Stripe",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "ef91c4016a866923c453ea19c983203ae77741cac63df24aacf90ce0eb677001",
+        "text": "接受付款，提升营收。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "c3025ea19ed3e7c02b31ae87fdec5c8fb5633aa68ca6970c56758b29e27eb0e2",
+        "text": "直接在 ChatGPT 中创建产品、价格和付款链接，更快速地开发支付集成。在 ChatGPT 中即可查询和管理付款、订阅、发票、退款、争议及客户，经营业务更轻松。搜索 Stripe 文档并获取集成建议，全程无需离开 ChatGPT，让支付集成的构建和调试比以往更快。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/supabase": {
+      "displayName": {
+        "sourceHash": "fe7ceb7816ed0e35c7a7378211f1c99e95aaa12536e8bc50be9ae22aaaf95845",
+        "text": "Supabase",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "caa5edc74b5333132733c9a09222736ffc5de6c6fac936e1e63e2adf428f7930",
+        "text": "管理和查询数据库",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "3ed6bf9bce2307e5b01de4e1c4922f505210044880f3c72e21eb17131d5a5490",
+        "text": "适用于 Codex 的官方 Supabase 插件。包含用于 Supabase 开发和 Postgres 最佳实践的智能体技能，并集成 MCP 服务器，让你可直接在 Codex 中管理 Supabase 项目。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/product-design": {
+      "displayName": {
+        "sourceHash": "f7b5178178fd0e6e4342d23f44e6c6a14b21d1cafbf177e6a10c83bbddaedbf8",
+        "text": "产品设计",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "5d2e8aa570ada6d97ec8102ddc7a474c76d626afbbb7837b20ea9503494477a5",
+        "text": "探索创意并制作原型",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "b0505a87de47cf3bd02540e4b9075df8927ca5064af65a64afd1c2e17bb5334c",
+        "text": "将早期创意转化为团队可评审的原型。探索产品方向、审查用户流程、研究用户摩擦点、基于线上 URL 制作原型，并让静态截图可交互。你可从书面简报、URL、截图或现有设计入手，在构建前比较不同的视觉方向。\n\n使用可用的浏览器、Figma、Canva、图像生成和托管工具收集参考资料、创建概念、评审结果，并与团队共同推进后续工作。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/clickup": {
+      "displayName": {
+        "sourceHash": "95ce1ec7edce8dc7e69211f2bb0daa35a326683c4cb3ce6cc01c930f1d50be5c",
+        "text": "ClickUp",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "01c7992b29a80f0921739b6b139c61ca21c3a93c981320438a9c8a34251fe3ef",
+        "text": "将 Codex 打造成你的 ClickUp 指挥中心。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "9c015ee45f2f7df71a0744bdb4dcc7f53666c0b43d724d1b5126907eaecee03b",
+        "text": "将 Codex 打造成你的 ClickUp 指挥中心。随时提问，查找一切，立即行动——全程不打断你的工作流。\n• 深度工作区搜索：自然提问，从你的所有工作中获取精准答案\n• 即问即行：直接在 Codex 中查找、创建、更新和管理工作\n• 无需切换上下文：无需离开对话，即可完成提问、获取答案和采取行动",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/consensus": {
+      "displayName": {
+        "sourceHash": "8abe09bf65aefdb8e84bd8564efb765179cc01ee3f45809e47c8c9a02f72ff83",
+        "text": "Consensus",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "a3ba1242d1b4f5dc09eae93acdef220eab5c38e8189d7db101a07cf74404771c",
+        "text": "探索科学研究",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "4bd07f69986110d437a8f13f7f007620321ac8bd2aeda2f3e744faed0a0bb095",
+        "text": "Consensus 是学术研究的首选 MCP。你可以直接连接 2.2 亿多篇同行评审论文，在对话中检索、综合并构建结构化的研究成果。\n\n开展文献综述、构建布尔检索策略、生成参考文献、识别研究空白，并起草带引用的内容——一切以 PubMed、Semantic Scholar 和 ArXiv 中的研究为依据。预置工作流可在几分钟内处理复杂任务：系统综述、课程阅读清单、包含新颖性分析的基金研究，以及临床证据综合。\n\n专为生物医学、社会科学、STEM 和所有学科的研究人员、学生、教职员工及临床医生打造。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/higgsfield": {
+      "displayName": {
+        "sourceHash": "5765ac355fcdf239243d505619361be935abb3bf0f2f989f970a64bf2f094e9e",
+        "text": "Higgsfield",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "shortDescription": {
+        "sourceHash": "e72e0fe7020b0f00e1a280bf8d97293fd4685396dbe13c92753c5016ff60f68b",
+        "text": "汇集所有图像和视频模型",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      },
+      "longDescription": {
+        "sourceHash": "df9d7c14d50582909396e65babf0894e35473cfa712c887b37e511d9f1ca1404",
+        "text": "通过文本提示或你自己的照片生成图像和视频。将产品图变成视频广告、重塑照片风格、让静态图动起来，或制作一段两分钟的旁白讲解视频。所有主流图像和视频模型尽在一处。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:49:18.971Z"
+      }
+    },
+    "openai-api-curated/chatcut": {
+      "displayName": {
+        "sourceHash": "7ce6a685eca760fa756d2e0380096c3f4db2456a31d541e52301ff3a0c0e56a6",
+        "text": "ChatCut",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:50:48.002Z"
+      },
+      "shortDescription": {
+        "sourceHash": "d9e92e39f0839039e42fe47befcd643fff143147f684b36b714a38e842336129",
+        "text": "安装并连接 ChatCut",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:50:48.002Z"
+      },
+      "longDescription": {
+        "sourceHash": "f6a7ee658b311e5c812e1c99d020681c0c4450b5d81e19140893069d18116c66",
+        "text": "下载、安装、打开、连接或修复已签名的正式版 ChatCut Desktop 应用，以便 Codex 使用其本地视频编辑工具和技能。",
+        "origin": "codex",
+        "updatedAt": "2026-11-20T18:50:48.002Z"
+      }
+    },
+    "openai-api-curated/adobe": {
+      "displayName": {
+        "sourceHash": "72fd3ae07d96f18c795566182bb4c13a90f62031237746e6a3a8637639d253be",
+        "text": "Adobe",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "a1cbe699c6bb83f840dbd60870603a2efbdfa759e05702c70c68fab40d945d32",
+        "text": "设计、合成与编辑",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "69e062aaac7518a24bae1765aca2449dfc20ee72a285ccb06889fc85d5f7a17f",
+        "text": "Adobe 通过对话解锁更多创作和完成工作的方式。Adobe 连接器此前名为 Photoshop，现在可跨 Creative Cloud 和 Acrobat 提供创意与生产力功能。描述你想制作或更改的内容，Adobe 就能帮助将想法、图像、视频和文档转化为精致成果——从编辑照片和创建 PDF，到设计社交媒体素材、调整视频尺寸、搜索 Creative Cloud 素材，以及生成数据驱动型文档。\n主要功能：\n\n* 精修人像或批量编辑照片：上传照片并描述你想要的效果——调整色彩、光线和色调；消除干扰元素并生成新元素；应用 Lightroom 预设；移除背景；模糊、裁剪、调整尺寸和扩展图像。\n* 从模板开始设计：从 Express 模板开始，更新文字和颜色，然后为社交媒体制作动画，或转换为 PDF。\n* 针对任意平台优化视频：上传横版视频，并要求将其重新制作为适合 YouTube Shorts、Instagram Reels 或任意平台的格式。你还可以将多个片段拼接为单个序列。\n* 搜索和整理创意作品：描述你要找的内容，即可按主题、风格、氛围或内容从 Creative Cloud 库中发现素材，无需浏览文件夹。\n* 处理 PDF 和文档：创建并转换精致的 PDF 和文档。\n* 创建数据驱动型文档：描述输出内容并提供数据——连接器会将原始数据或内容转换为格式精美、可分享的 PDF，包括徽章、卡片、目录等。\n\n你可以以访客身份开始使用，并登录 Adobe 账户以获取更多功能与工具、Creative Cloud 存储空间以及跨会话保存的工作内容。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/airtable": {
+      "displayName": {
+        "sourceHash": "61a463ae2530e7960c35f1ac06b8bf310d3b587de79ef9da386289ed3782089d",
+        "text": "Airtable",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "3dc15b736d26facaf4b67109d3bad79d437eff4eff9c22ddd84b4d64fcec4b1d",
+        "text": "为 ChatGPT 添加结构化数据",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "57a47ba9be2d342644592e7ed6c040fb33b0e9afe0f5b2426c1fd707acfc6de2",
+        "text": "将运营数据和相关背景信息引入 ChatGPT 的对话流程。你可以通过对话提问、创建和更新记录并分析数据。将 Airtable 中的数据作为你在 ChatGPT 中所做工作的输入，例如使用你在 Airtable 中整理好的内容构建落地页。无需离开聊天即可快速更新 Airtable。当你需要快速获取结构化内部数据来辅助对话时，Airtable for ChatGPT 是理想之选。\n\nAirtable 应用将 ChatGPT 直接连接到你的 Airtable bases，让你可以通过对话提问、创建和更新记录并分析数据。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/creative-production": {
+      "displayName": {
+        "sourceHash": "1ab0aa53c590a3a1fc38d45a0a3522c50b7c848ec78e3a300ac5771617d6db69",
+        "text": "创意制作",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "d0ffa70669ba6fad49f7f7962eb09d042b1a6a4cd6478843db43a070af392d06",
+        "text": "根据简报或产品图片创建营销视觉素材",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "6b2d3f568cb3abcde22f26c220eef2981c11e463e45b79bad29878fc8eda9d66",
+        "text": "Creative Production 帮助营销人员将简报、产品图片、优惠信息或现有素材转化为可供团队审阅的多组视觉方案。你可以用它探索营销活动创意、概念图、情绪板、产品植入、广告方向、商品展示图、社交媒体帖子和可复用样式。从简报或图片开始，比较最出色的方案，然后针对所需渠道调整选定的方向。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/data-analytics": {
+      "displayName": {
+        "sourceHash": "650314e6ff90d90cc37ea76a180d4c617d84646a6bc8fc8336e8dbd4ba43aacf",
+        "text": "数据分析",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "def5b25f1b8ea45bc697028e4d68a9f33d7af59262cab7874911ba7ff90f60a6",
+        "text": "用数据回答产品与业务问题",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "a28dcc9f1771ce4a5333cbef406f0664166292c6a8a3c6a3ac656014fbb91564",
+        "text": "Data Analytics 帮助你围绕产品或业务的问题获得可信答案。你可以询问指标为何变化、数据显示团队接下来应重点关注什么、如何定义 KPI、某个数据集是否可靠，或者机会可能有多大；它可以帮助你调查数据，并将发现转化为可分享的报告、图表、仪表板、笔记本和建议。\n\n从你已有的数据开始：已连接的数据仓库、BI 或产品分析工具、文档、聊天记录、电子表格、上传的文件、粘贴的结果，或明确标注的样本数据。该插件会引导你采用合适的工作流程，尽可能核验来源，并让证据清晰呈现在可审阅的表格、图表、仪表板和可分享的报告应用中。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/gmail": {
+      "displayName": {
+        "sourceHash": "d19a15c70437ed6ea0e4bd1bce2cb335edaf30e47c44bb1b195937dda84ce65f",
+        "text": "Gmail",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "05ede67fcab018a2658f96610094cfb775594a571371e85725d8ee9706bcdcef",
+        "text": "读取和管理 Gmail",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "83c943b19b1f6a606f91fa7ed8a5e866faf3b56f27fab08ff823802847b72f7b",
+        "text": "使用 Gmail 汇总收件箱动态、起草回复，并通过已连接的 Gmail 应用整理邮件线程。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/google-calendar": {
+      "displayName": {
+        "sourceHash": "b074310e911fb15960b2f2596400df34e3a5724811e6d316f1aeb110cf5aac1c",
+        "text": "Google Calendar",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "5ebaa8d283a901a76ff4ecb570c46ea3a3ca52e72e77fc0c5966ff7df263add0",
+        "text": "管理 Google Calendar 活动",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "b78bdd11e57b54c057e8402171fa63829851fc312e0bf8f9d3722912e99d45b1",
+        "text": "使用 Google Calendar 汇总某天的日程、查看空闲时间、列出日历，并直接根据任务提示创建、更新或删除活动。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      }
+    },
+    "openai-api-curated/google-drive": {
+      "displayName": {
+        "sourceHash": "915ef4bad59a1329e2b742f2dc86cb9ee60a906fb8bde81ceeb9d16f63ea4cbd",
+        "text": "Google Drive",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "shortDescription": {
+        "sourceHash": "c7c64289d56fbde8a5db1c004b49af66f0986964174e9a8740d7cf1686cf748b",
+        "text": "Drive、Docs、Sheets 或 Slides",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:36:39.611Z"
+      },
+      "longDescription": {
+        "sourceHash": "3ce9e3a0dc336e795f1771bf20c401d44a32f497d415e388d6c39f0e239972d4",
+        "text": "使用 Google Drive 作为统一的 Google 文件插件，处理搜索、文件整理、共享以及 Google Docs、Google Sheets 和 Google Slides 工作流。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/lovable": {
+      "displayName": {
+        "sourceHash": "6a5b495b1f42229ebd266b2d311ab7c50117a5b159770d3a2dbc30ec4d74a0a9",
+        "text": "Lovable",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "2fbdde22d9ee1b689310e26a5f2f68e9e8267e079dadf98e69226d609678b239",
+        "text": "构建应用和网站",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "2fbdde22d9ee1b689310e26a5f2f68e9e8267e079dadf98e69226d609678b239",
+        "text": "构建应用和网站",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/outlook-calendar": {
+      "displayName": {
+        "sourceHash": "0852c79899e564004e8d509890ea6aab25f12104d686167ec62eb31916ad715e",
+        "text": "Outlook Calendar",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "d990edc13f2e45d3b02fb5c11fb5b76615a7f72ce550d9ce105d96ab0d45d814",
+        "text": "管理 Outlook 日程",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "b140538b5ffd81e02170c1f0a273f8ba92bd56b87399551c1971d827112de36d",
+        "text": "使用 Outlook Calendar 汇总当日日程、比较空闲时间、为会议做准备、解释 Outlook 状态含义，并通过已连接的 Microsoft Outlook 应用安排、改期或取消活动。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/outlook-email": {
+      "displayName": {
+        "sourceHash": "80f42a21d3a5cef58da309e253e74e37ccea126010f6b164d80e8b5f05d8c3b5",
+        "text": "Outlook Email",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "b935ba4d3ccc18e7666dfa77299616406bce2bea8bb48ed14bfa2bd6caa1c597",
+        "text": "分类处理 Outlook 收件箱",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "a4691e3dc97e9215188cf7675d2bb28c38b4a530ca8d10ced51d8f7114726ae4",
+        "text": "使用 Outlook Email 分类处理收件箱、汇总邮件对话、提取行动项，并通过已连接的 Microsoft Outlook 应用起草回复或转发邮件。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/public-equity-investing": {
+      "displayName": {
+        "sourceHash": "eaf620ddc31709c901aa60427dda808835c289412149238a76a10e9dc1a93f26",
+        "text": "公开股票投资",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "ddfa0fbbff77dd0596aa620d13b69763f16418cc8ef18dfb61dc2f542dfa8ee2",
+        "text": "公开股票 PM 研究、多空策略、财报、ETF/指数尽调及备忘录",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "fb0ffc9db85918469f6124574153e718fe2dffe46bb6d9ef78c16a18dd252c7a",
+        "text": "面向只做多投资者、多空对冲基金、卖方股票研究团队、ETF/指数及成分股尽调人员、事件驱动型股票投资者，以及行业/主题上市股票研究团队的公开股票投资工作流。输出应明确呈现哪些标的定价失当、哪些因素已计入价格、哪些证据能验证或推翻投资论点、下一步应采取什么行动，以及还缺少哪些证据。信用工具、信用状况、重组、困境资产、回收、利差、收益率、契约条款和债务证券分析，请使用 Credit Markets。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/sharepoint": {
+      "displayName": {
+        "sourceHash": "9b85c8e08043ba8862b926334fb78f312db3028545adf785a5cf69cb19752229",
+        "text": "SharePoint",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "7d651d9139d5145ce504b2e1f5e52d124962589a05f99988f6245dd8db2c1395",
+        "text": "汇总 SharePoint 内容",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "29c72186d9bc6225c2c6809f05523515d9cbc0350ba5c2103b36d2ecec16b7ef",
+        "text": "使用 SharePoint 汇总网站、页面和文件，提取所有者和状态信息，并通过已连接的 Microsoft SharePoint 应用规划安全的内容更新。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/shopify": {
+      "displayName": {
+        "sourceHash": "5e875bc90a3601477b5edf4d7640cbf77483971b3735facb115b3125add68c49",
+        "text": "Shopify",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "167f25539206a2eb6edc40026a78946beb2a55ed0a8a155cd4a24a04a7e5f7fb",
+        "text": "构建和管理商店",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "longDescription": {
+        "sourceHash": "60b1e3c124e25cc62c4494ddd4b7bb2330bd8afe425cbbd27bedc213ca0f6146",
+        "text": "Shopify for ChatGPT 让你像聊天一样轻松建店和管理店铺。只需描述你的业务，即可轻松连接现有商店或创建新的在线商店。通过对话即可添加产品、跨地点调整库存、创建折扣码、浏览近期订单、查看客户详情，或获取商店表现分析。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      }
+    },
+    "openai-api-curated/teams": {
+      "displayName": {
+        "sourceHash": "1e1a1c078af2887a56987f6da6ffc8f9b98261c9b2b8910e3b9ee23f294e2007",
+        "text": "Teams",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:37:21.612Z"
+      },
+      "shortDescription": {
+        "sourceHash": "564728775adcac5759062bb96f16f6b6c61df44e34fd92cfaa3de5fd8a53dae6",
+        "text": "总结 Teams 内容并跟进",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:38:02.029Z"
+      },
+      "longDescription": {
+        "sourceHash": "2d954962e4876d717e8ae5b7d4da2f4cf46350343afa19a1413c98b3e8910e02",
+        "text": "使用已连接的 Microsoft Teams 应用，通过 Teams 汇总聊天、提取行动项，并起草频道或会议跟进内容。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:38:02.029Z"
+      }
+    },
+    "openai-api-curated/zoom": {
+      "displayName": {
+        "sourceHash": "509c517ede79fef060a5f3a109fd1f45951eef2c7970b25c20992011e36a4070",
+        "text": "Zoom",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:38:02.029Z"
+      },
+      "shortDescription": {
+        "sourceHash": "2d0a193d15f94c04410ffcaf84c363c7a3f4ce901fda245f30525a1fd9faea10",
+        "text": "来自 Zoom 的智能会议洞察",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:38:02.029Z"
+      },
+      "longDescription": {
+        "sourceHash": "53cd2d5032bb79271c05e8fbd1a605d3cf1259b500cb7507a5bd49fa92e0ae94",
+        "text": "Zoom 通过 Zoom 应用连接器将 Codex 接入 Zoom 会议上下文，并为规划、构建、调试和审查 Zoom 集成提供开发者工作流，覆盖 APIs、SDKs、webhooks、WebSockets、bots 和自动化场景。",
+        "origin": "codex",
+        "updatedAt": "2026-11-21T10:38:02.029Z"
+      }
+    }
+  }
+}

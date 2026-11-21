@@ -1,0 +1,97 @@
+{
+  "openai-bundled/browser": {
+    "displayName": "浏览器",
+    "shortDescription": "控制应用内浏览器",
+    "longDescription": "浏览器插件让 ChatGPT 打开并控制应用内浏览器，主要用于本地开发页面和文件。在 ChatGPT 内测试页面时，可以用它导航、检查、点击、输入和截图。"
+  },
+  "openai-api-curated/build-web-apps": {
+    "displayName": "构建 Web 应用",
+    "shortDescription": "借助生成素材、浏览器测试、支付和数据库构建前端 Web 应用",
+    "longDescription": "使用「构建 Web 应用」创建由 Codex 生成视觉素材的前端应用界面；通过浏览器插件和内置应用浏览器验证效果，组合 shadcn/ui，接入 Stripe 支付，并设计或调优 Supabase/Postgres 数据流。"
+  },
+  "openai-api-curated/build-web-data-visualization": {
+    "displayName": "构建 Web 数据可视化",
+    "shortDescription": "设计、构建、测试并导出 Web 数据可视化",
+    "longDescription": "使用「构建 Web 数据可视化」选择、设计、实现、测试并导出浏览器图表、仪表盘、地图、WebGL/Three.js 场景、Canvas/D3 可视化、甘特图、UML/软件图、滚动叙事、报告、PDF 和幻灯片。它强调有来源支撑的数据、无障碍的响应式布局、可通过 URL 分享的分析状态，以及面向高级视觉叙事的“概念优先”设计。"
+  },
+  "openai-bundled/chrome": {
+    "displayName": "Chrome 浏览器",
+    "shortDescription": "使用 ChatGPT 控制 Chrome",
+    "longDescription": "Chrome 插件让 ChatGPT 使用你的 Chrome 浏览器完成需要现有浏览器状态的任务，包括已打开的标签页、页面内容和你已登录的网站。它可以在工作时导航、查看、点击、输入和截图。控制权始终在你手中：ChatGPT 在访问新网站前会先询问，你可以随时停止操作，也可以在设置中管理或移除 Chrome 访问权限。浏览器内容可能包含已登录网站中的敏感信息。使用此插件产生的浏览器数据可能会用于训练，具体取决于你的 OpenAI 账户数据控制设置。"
+  },
+  "openai-api-curated/codex-security": {
+    "displayName": "Codex 安全",
+    "shortDescription": "面向代码库的安全扫描",
+    "longDescription": "Codex 安全提供可复用的工作流，用于对代码、差异和相关产物进行安全扫描、分析、验证与调查。"
+  },
+  "openai-bundled/codex-app-tools": {
+    "displayName": "Codex 应用工具",
+    "shortDescription": "通过一个本地 MCP 服务器提供 Codex 桌面应用工具。",
+    "longDescription": "通过一个本地 MCP 服务器提供 Codex 桌面应用工具。"
+  },
+  "openai-bundled/computer-use": {
+    "displayName": "计算机操作",
+    "shortDescription": "控制 Windows 应用",
+    "longDescription": "Windows 计算机操作让 ChatGPT 使用你电脑上的任意应用，包括浏览器和你允许它访问的文件。工作时它可能会截图或读取页面内容。控制权始终在你手中：你可以选择允许 ChatGPT 访问哪些应用，随时停止操作，并决定是否将截图用于训练。"
+  },
+  "openai-primary-runtime/documents": {
+    "displayName": "文档",
+    "shortDescription": "创建和编辑文档",
+    "longDescription": "在本地创建、编辑、检查、渲染、验证并导出 DOCX 文档产物。当最终输出或目标是文档、doc、docs、Word 文件、Google 文档、备忘录、报告或写作产物时，使用「文档」插件。"
+  },
+  "openai-api-curated/github": {
+    "displayName": "GitHub",
+    "shortDescription": "分类处理 PR、Issue、CI 和发布流程",
+    "longDescription": "使用 GitHub 插件检查仓库、审查拉取请求、处理反馈、调试失败的 Actions 检查，并通过“连接器优先、必要时回退到 CLI”的工作流准备待审代码变更。"
+  },
+  "openai-bundled/latex": {
+    "displayName": "LaTeX",
+    "shortDescription": "使用 TeX 工具编译 LaTeX",
+    "longDescription": "面向 Codex 的 LaTeX 工作流：简单项目优先使用内置 Tectonic；较完整项目回退到检测到的 TeX Live 或 MacTeX；验证本地 LaTeX 环境是否就绪；仅当没有可用系统安装时，才可选安装由 Codex 管理的完整 TeX Live 运行时。"
+  },
+  "openai-api-curated/openai-developers": {
+    "displayName": "OpenAI 开发者",
+    "shortDescription": "遵循 OpenAI 最佳实践开发 AI 应用、智能体和 ChatGPT Apps",
+    "longDescription": "在 Codex 中使用「OpenAI 开发者」构建 AI 应用、智能体和 ChatGPT Apps，借助 OpenAI 文档、OpenAI API、Apps SDK 和 Agents SDK。连接 OpenAI 平台（platform.openai.com），即可用真实 OpenAI API 密钥立即运行 Codex 构建的应用。通过 Deployment Manager 运行并在本地部署 Agents SDK 项目，搭建 ChatGPT Apps 脚手架，并准备 ChatGPT Apps 提交产物。"
+  },
+  "openai-primary-runtime/pdf": {
+    "displayName": "PDF",
+    "shortDescription": "读取、创建并验证 PDF",
+    "longDescription": "在本地读取、创建、检查、渲染、验证并提取 PDF 文件内容。当最终输出或目标是 PDF 文件且视觉版式保真度很重要时，使用「PDF」插件。"
+  },
+  "openai-primary-runtime/presentations": {
+    "displayName": "演示文稿",
+    "shortDescription": "创建和编辑演示文稿",
+    "longDescription": "在本地创建、编辑、检查、渲染、验证并导出演示幻灯片，包括 PPTX 制作以及原生 Google 幻灯片交接指引。当最终输出或目标是 deck、slidedeck、演示文稿、幻灯片、PowerPoint、Google 幻灯片、演讲者备注或视觉幻灯片修复时，使用「演示文稿」插件。"
+  },
+  "openai-primary-runtime/spreadsheets": {
+    "displayName": "电子表格",
+    "shortDescription": "创建和编辑电子表格",
+    "longDescription": "在本地创建、编辑、检查、渲染、验证并导出 XLSX、CSV 和 TSV 电子表格，包括为原生 Google 表格交接而进行的本地 XLSX 制作。当最终输出或目标是电子表格、工作簿、工作表、Google 表格或 CSV 文件时，使用「电子表格」插件。若要在 Microsoft Excel 应用中处理已打开的电子表格，请通过 ChatGPT 加载项使用「Excel 实时控制」。"
+  },
+  "openai-api-curated/superpowers": {
+    "displayName": "Superpowers 开发流程",
+    "shortDescription": "规划、开发和调试代码",
+    "longDescription": "使用 Superpowers 引导智能体完成头脑风暴、实现规划、测试驱动开发、系统化调试、并行执行、代码审查和分支收尾等工作流。"
+  },
+  "openai-primary-runtime/template-creator": {
+    "displayName": "模板创建器",
+    "shortDescription": "从参考内容创建或更新可复用模板",
+    "longDescription": "使用「模板创建器」从文档、电子表格、演示文稿、Google 文档/幻灯片/表格链接、ImageGen 或 Product Design 图片、电子邮件、Slack 消息和 Site 项目中创建可复用模板。模板创建器会保留参考内容的结构、语气、版式和风格，让你随时快速生成新版本。"
+  },
+  "openai-bundled/unified-computer-use": {
+    "displayName": "统一计算机操作",
+    "shortDescription": "由应用管理的浏览器自动化运行时。",
+    "longDescription": "由应用管理的浏览器自动化运行时。"
+  },
+  "openai-bundled/visualize": {
+    "displayName": "可视化",
+    "shortDescription": "创建交互式可视化",
+    "longDescription": "直接在对话中创建交互式图表、地图、示意图、模拟、3D 模型、数据浏览器和 UI 预览。可以筛选数据、选择细节、比较场景并调整输入，实时查看结果变化。"
+  },
+  "plugin-i18n-local/plugin-translator": {
+    "displayName": "插件翻译",
+    "shortDescription": "把 Codex 插件介绍整理成中文目录，并在插件更新后只翻译变化内容。",
+    "longDescription": "扫描本机已安装的 Codex 插件，生成可搜索的中文插件目录。翻译按插件 ID、字段和源文本哈希缓存；Codex 更新不会清除缓存，插件更新后只补译新增或变化的字段。"
+  }
+}

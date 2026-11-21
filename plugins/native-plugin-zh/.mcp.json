@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "native_plugin_zh": {
+      "command": "cmd.exe",
+      "args": [
+        "/d",
+        "/s",
+        "/c",
+        "call",
+        "./scripts/launch_mcp.cmd",
+        "./server.mjs"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "CODEX_HOME",
+        "CODEX_MCP_NODE_PATH",
+        "CODEX_CLI_PATH",
+        "USERPROFILE",
+        "LOCALAPPDATA",
+        "APPDATA",
+        "PATH"
+      ],
+      "startup_timeout_sec": 60,
+      "tool_timeout_sec": 600,
+      "default_tools_approval_mode": "approve"
+    }
+  }
+}

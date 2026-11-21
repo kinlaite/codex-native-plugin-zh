@@ -1,0 +1,5 @@
+node_modules/
+*.log
+sync.lock
+.DS_Store
+Thumbs.db
