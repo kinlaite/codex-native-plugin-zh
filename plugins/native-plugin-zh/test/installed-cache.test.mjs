@@ -40,7 +40,7 @@ const { catalogFingerprint, startCatalogWatcher } = await import(
 );
 const { discoverLocalPlugins } = await import("../lib/discovery.mjs");
 const { PACK_FILE } = await import("../lib/paths.mjs");
-const { syncWithTranslation } = await import("../lib/sync.mjs");
+const { restoreOriginals, syncWithTranslation } = await import("../lib/sync.mjs");
 const { loadState } = await import("../lib/storage.mjs");
 
 function writeManifest(shortDescription) {
@@ -157,6 +157,22 @@ test("translates the actual installed cache manifest", async () => {
   const entry = loadState().plugins["remote-market/qodo"];
   assert.equal(entry.manifestPath, manifestPath);
   assert.ok(entry.lastAppliedAt);
+});
+
+test("restores the original English in the installed cache manifest", async () => {
+  const result = await restoreOriginals({
+    force: true,
+    quiet: true,
+    lockWaitMs: 10000,
+  });
+  assert.equal(result.errors.length, 0);
+  const iface = manifestInterface();
+  assert.equal(iface.displayName, "Qodo");
+  assert.equal(iface.shortDescription, "Code intelligence and review");
+  assert.equal(
+    iface.longDescription,
+    "Qodo setup, code intelligence, and review workflows.",
+  );
 });
 
 test("cleans up the installed cache fixture", () => {
