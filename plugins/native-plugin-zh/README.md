@@ -2,7 +2,7 @@
 
 在 **Windows 版 Codex 桌面应用**的插件市场、已安装列表和详情页中显示简体中文名称、简介与详细说明。
 
-单插件自闭环：启用后写入中文，关闭后恢复英文；Codex 更新、目标插件更新或新装本地插件后自动增量翻译；切换开关可自动重启 Codex，独立重启助手不会显示命令行黑色窗口。
+单插件自闭环：启用后写入中文，关闭后恢复英文；Codex 更新、目标插件更新或新装本地/Git 插件后自动增量翻译；切换开关可自动重启 Codex，独立重启助手不会显示命令行黑色窗口。
 
 ## 系统要求
 
@@ -17,7 +17,7 @@
 
 ### 从 GitHub
 
-当前 `main` 发布版本为 **1.6.0**：
+当前 `main` 发布版本为 **1.6.1**：
 
 ```powershell
 codex plugin marketplace add kinlaite/codex-native-plugin-zh --ref main
@@ -45,7 +45,7 @@ codex plugin list --available --json
 
 - **自动重启**：监听器先写对清单，再通过 WMI 创建使用 `DETACHED_PROCESS` 的 Node 助手。助手不分配控制台窗口，独立于 Codex 进程树，能完成“关闭 → 重新拉起”。可在 `~/.codex/plugin-i18n-native/settings.json` 设置 `"autoRestartApp": false`。
 - **启用**：hooks 或插件 MCP 启动时把缓存译文写入 Codex 实际读取的插件清单。
-- **自动增量翻译**：MCP 启动后会监听本地插件清单。Codex 更新重新物化 marketplace、目标插件升级、新装本地插件、清单路径或内容变化，都会触发一次增量同步；英文未变字段复用缓存，只调用 Codex 翻译新增或英文变化的字段。
+- **自动增量翻译**：MCP 启动后会监听本地 marketplace 源和 Git 插件的已安装缓存。Codex 更新重新物化 marketplace、目标插件升级、新装本地/Git 插件、清单路径或内容变化，都会触发一次增量同步；英文未变字段复用缓存，只调用 Codex 翻译新增或英文变化的字段。
 - **关闭**：以下任一路径都会恢复英文：
   1. `~/.codex/config.toml` 中注册的用户级恢复 MCP，Codex 每次启动都会拉起；
   2. 运行中的插件 MCP 监听 `config.toml` 变化；
@@ -77,11 +77,11 @@ codex plugin list --available --json
 
 ## 数据与隐私
 
-- 会改写 Codex 实际读取的本地插件清单，并在 `.codex\plugin-i18n-native\backups` 保存英文原值备份。
+- 会改写 Codex 实际读取的插件清单，并在 `.codex\plugin-i18n-native\backups` 保存英文原值备份。本地 marketplace 插件写入源清单；Git/Git-subdir 插件写入 Codex 物化后的已安装缓存清单。
 - 启用时会在 `config.toml` 注册 `[mcp_servers.native_plugin_zh_restore]`；卸载工具会移除。
-- 状态、译文、备份和日志保存在 `~/.codex/plugin-i18n-native`，不写入插件安装缓存。
+- 状态、译文、备份和日志保存在 `~/.codex/plugin-i18n-native`。
 - 调用需要翻译的同步操作时，新增或变化的英文字段会通过用户当前配置的 Codex 模型处理；后台自动翻译也可能消耗模型额度。插件本身不连接第三方翻译服务。
-- 不修改 Codex 本体、`app.asar`、WindowsApps 或插件安装缓存。
+- 不修改 Codex 本体、`app.asar` 或 WindowsApps。Git 插件没有本地 marketplace 源，只能通过其已安装缓存清单生效；该缓存同样走备份、恢复和源哈希校验。
 
 ## 正确性保障
 
@@ -105,6 +105,6 @@ codex plugin list --available --json
 - 依赖 Codex 当前的插件清单、hooks 和用户级 MCP 协议；协议彻底变化后需要适配。
 - 只覆盖 `displayName`、`shortDescription`、`longDescription` 三个字段；分类、开发者名、默认提示词和截图不翻译。
 - hooks 未批准、文件只读或锁争用极端严重时，自动写入可能失败；可运行已安装版本的 `scripts/cli.mjs restore`，或调用 `native_zh_restore_check`。
-- 远端 Git marketplace 中的插件不能通过本地清单覆盖；本插件只处理本地可见的插件源。
+- 尚未安装的远端 Git marketplace 条目没有本地清单，无法提前翻译；安装到 Codex 的本地缓存后会自动纳入监听和增量翻译。
 - Codex 更新重新物化内置 marketplace 后，后台监听或下一次启动会自动修复；若更新期间应用未运行，则由下次启动处理。
 - 这是非官方、可恢复的本地覆盖层，不代表 OpenAI 官方本地化。

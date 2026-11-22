@@ -67,7 +67,7 @@ const TOOLS = [
     name: "native_zh_sync",
     title: "同步原生插件中文",
     description:
-      "立即重新发现本地插件来源并同步中文。英文未变的字段复用缓存，只翻译新增或变化字段；日常更新通常已由后台自动完成。",
+      "立即重新发现本地 marketplace 插件来源和 Git 插件的已安装缓存并同步中文。英文未变的字段复用缓存，只翻译新增或变化字段；日常更新通常已由后台自动完成。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -428,7 +428,7 @@ async function dispatch(message) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: SERVER_NAME, version: APP_VERSION },
         instructions:
-          "维护 Windows 版 Codex 原生插件 UI 的中文清单覆盖层，单插件自闭环：插件启用后由 hooks 或 MCP 写入中文；后台监听本地插件清单，Codex 更新、目标插件更新或新装本地插件后只翻译新增和英文变化的字段；插件关闭后由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。切换开关可自动重启 Codex，WMI 重启助手独立运行且不显示控制台窗口。不安装计划任务或独立外部服务，不修改 Codex 本体。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
+          "维护 Windows 版 Codex 原生插件 UI 的中文清单覆盖层，单插件自闭环：插件启用后由 hooks 或 MCP 写入中文；后台监听本地 marketplace 源与 Git 插件的已安装缓存，Codex 更新、目标插件更新或新装本地/Git 插件后只翻译新增和英文变化的字段；插件关闭后由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。切换开关可自动重启 Codex，WMI 重启助手独立运行且不显示控制台窗口。不安装计划任务或独立外部服务，不修改 Codex 本体。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
       });
       return;
     }

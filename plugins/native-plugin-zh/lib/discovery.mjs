@@ -116,18 +116,37 @@ function pluginKey(marketplace, name) {
   return `${marketplace}/${name}`;
 }
 
-function collectInstalledKeys({ allowCli = true } = {}) {
-  const keys = new Set();
-  if (!allowCli) return keys;
+function collectInstalledPlugins({ allowCli = true } = {}) {
+  const plugins = new Map();
+  if (!allowCli) return plugins;
   try {
     const result = runCodexCliJson(["plugin", "list", "--json"]);
     for (const plugin of [...(result.installed || []), ...(result.available || [])]) {
       const name = stringValue(plugin.name);
       const marketplace = stringValue(plugin.marketplaceName || plugin.marketplace);
-      if (name && marketplace) keys.add(pluginKey(marketplace, name));
+      if (!name || !marketplace) continue;
+      const key = pluginKey(marketplace, name);
+      plugins.set(key, {
+        key,
+        version: stringValue(plugin.version) || null,
+      });
     }
   } catch {}
-  return keys;
+  return plugins;
+}
+
+function installedCacheRoots() {
+  const roots = [
+    path.join(CODEX_HOME, "plugins", "cache"),
+    path.join(os.homedir(), "plugins", "cache"),
+  ];
+  const seen = new Set();
+  return roots.filter((root) => {
+    const identity = path.resolve(root).toLowerCase();
+    if (seen.has(identity) || !fs.existsSync(root)) return false;
+    seen.add(identity);
+    return true;
+  });
 }
 
 function parseConfigMarketplaceRoots() {
@@ -334,6 +353,97 @@ function scanMarketplaceRoots(installedKeys, options = {}) {
   return { plugins: found, errors };
 }
 
+function scanInstalledCacheRoots(installedPlugins, { includeAll = false } = {}) {
+  const found = [];
+  const errors = [];
+  const byKey = new Map();
+
+  for (const root of installedCacheRoots()) {
+    let marketplaces = [];
+    try {
+      marketplaces = fs.readdirSync(root, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const marketplaceEntry of marketplaces) {
+      if (!marketplaceEntry.isDirectory()) continue;
+      const marketplace = marketplaceEntry.name;
+      const marketplaceRoot = path.join(root, marketplace);
+      let pluginEntries = [];
+      try {
+        pluginEntries = fs.readdirSync(marketplaceRoot, { withFileTypes: true });
+      } catch {
+        continue;
+      }
+      for (const pluginEntry of pluginEntries) {
+        if (!pluginEntry.isDirectory()) continue;
+        const pluginRoot = path.join(marketplaceRoot, pluginEntry.name);
+        const candidates = [pluginRoot];
+        try {
+          for (const versionEntry of fs.readdirSync(pluginRoot, { withFileTypes: true })) {
+            if (versionEntry.isDirectory()) {
+              candidates.push(path.join(pluginRoot, versionEntry.name));
+            }
+          }
+        } catch {}
+
+        for (const candidate of candidates) {
+          try {
+            const manifestPath = manifestPathFor(candidate);
+            if (!manifestPath) continue;
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+            const pluginName =
+              stringValue(manifest.name) || pluginEntry.name;
+            if (!pluginName) continue;
+            const key = pluginKey(marketplace, pluginName);
+            const installed = installedPlugins.get(key) || null;
+            if (!includeAll && !installed) continue;
+            const manifestStat = fs.statSync(manifestPath);
+            const version = stringValue(manifest.version) || null;
+            const versionMatch =
+              !!installed?.version &&
+              (installed.version === version ||
+                installed.version === path.basename(candidate));
+            const score = {
+              versionMatch: versionMatch ? 1 : 0,
+              mtimeMs: Math.round(manifestStat.mtimeMs),
+            };
+            const previous = byKey.get(key);
+            if (
+              previous &&
+              (previous.score.versionMatch > score.versionMatch ||
+                (previous.score.versionMatch === score.versionMatch &&
+                  previous.score.mtimeMs >= score.mtimeMs))
+            ) {
+              continue;
+            }
+            byKey.set(key, {
+              score,
+              plugin: {
+                key,
+                marketplace,
+                pluginName,
+                sourcePath: candidate,
+                manifestPath,
+                version,
+                installed: true,
+              },
+            });
+          } catch (error) {
+            errors.push({
+              key: `${marketplace}/${pluginEntry.name}`,
+              message: error.message,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  found.push(...[...byKey.values()].map((entry) => entry.plugin));
+  return { plugins: found, errors };
+}
+
 function normalizeAppServerResult(result, scope) {
   const plugins = [];
   let remoteSkipped = 0;
@@ -400,7 +510,8 @@ export async function discoverLocalPlugins({
     }
   }
 
-  const installedKeys = collectInstalledKeys({ allowCli });
+  const installedPlugins = collectInstalledPlugins({ allowCli });
+  const installedKeys = new Set(installedPlugins.keys());
   const scanned = scanMarketplaceRoots(installedKeys, { allowCli });
   errors.push(...scanned.errors.map((item) => ({ stage: "scan", ...item })));
   for (const plugin of scanned.plugins) {
@@ -411,6 +522,16 @@ export async function discoverLocalPlugins({
       continue;
     }
     if (scope === "installed-only" && !plugin.installed) continue;
+    byKey.set(plugin.key, plugin);
+  }
+
+  const cached = scanInstalledCacheRoots(installedPlugins, {
+    includeAll: !allowCli,
+  });
+  errors.push(...cached.errors.map((item) => ({ stage: "cache-scan", ...item })));
+  for (const plugin of cached.plugins) {
+    if (scope === "installed-only" && !plugin.installed) continue;
+    if (byKey.has(plugin.key)) continue;
     byKey.set(plugin.key, plugin);
   }
 

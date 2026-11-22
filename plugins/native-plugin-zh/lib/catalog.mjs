@@ -357,7 +357,7 @@ export async function startCatalogWatcher({
     pollTimer.unref?.();
 
     logLine(
-      `catalog: 已开始监听本地插件清单（${initial.plugins} 个插件，poll=${intervalMs}ms，debounce=${debounce}ms）`,
+      `catalog: 已开始监听插件清单（本地源与安装缓存，${initial.plugins} 个插件，poll=${intervalMs}ms，debounce=${debounce}ms）`,
     );
 
     return () => {
@@ -365,7 +365,7 @@ export async function startCatalogWatcher({
       clearInterval(pollTimer);
       if (timer) clearTimeout(timer);
       started = false;
-      logLine("catalog: 已停止监听本地插件清单");
+      logLine("catalog: 已停止监听插件清单");
     };
   } catch (error) {
     started = false;
