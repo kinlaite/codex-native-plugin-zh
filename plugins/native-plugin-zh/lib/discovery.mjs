@@ -196,7 +196,13 @@ function findMarketplaceMetadataRoots(base, maxDepth) {
     } catch {
       return;
     }
-    if (entries.some((entry) => entry.isDirectory() && entry.name === ".agents")) {
+    if (
+      entries.some(
+        (entry) =>
+          entry.name === ".agents" &&
+          (entry.isDirectory() || entry.isSymbolicLink()),
+      )
+    ) {
       const metadata = path.join(directory, ".agents", "plugins", "marketplace.json");
       try {
         if (fs.statSync(metadata).isFile()) roots.push(directory);
