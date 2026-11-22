@@ -15,6 +15,7 @@ import {
   readJson,
   resolveCodexCommand,
 } from "./paths.mjs";
+import { catalogStatus } from "./catalog.mjs";
 import { historyTail, readPluginConfigState } from "./lifecycle.mjs";
 import { cleanupLegacyResidue } from "./migration.mjs";
 import {
@@ -131,6 +132,8 @@ export async function diagnose({ json = false, quiet = false } = {}) {
   const setting = getSettings();
   const hookTrust = inspectHookTrustConfig(config.pluginId);
   const watcher = inspectWatcherAvailability();
+  const settings = readJson(SETTINGS_FILE, null) || {};
+  const catalog = catalogStatus();
   const payload = {
     appVersion: APP_VERSION,
     dataDir: DATA_DIR,
@@ -152,6 +155,8 @@ export async function diagnose({ json = false, quiet = false } = {}) {
     packStats: packStats(pack),
     hookTrust,
     watcher,
+    autoTranslateUpdates: catalog.autoTranslateUpdates,
+    catalog,
     sync: {
       localPlugins: syncStatus.localPlugins,
       installedPlugins: syncStatus.installedPlugins,
@@ -164,7 +169,8 @@ export async function diagnose({ json = false, quiet = false } = {}) {
       lastSyncAt: syncStatus.lastSyncAt,
     },
     history: historyTail(8),
-    lastTranslationFailureAt: readJson(SETTINGS_FILE, null)?.lastTranslationFailureAt || null,
+    lastTranslationSuccessAt: settings.lastTranslationSuccessAt || null,
+    lastTranslationFailureAt: settings.lastTranslationFailureAt || null,
   };
 
   if (json) {
@@ -186,6 +192,20 @@ export async function diagnose({ json = false, quiet = false } = {}) {
     console.log(`中文覆盖：${payload.overlayActive ? "已生效" : "未生效"}`);
     console.log(`插件 hooks：${payload.hookTrust.configured ? "已写入信任记录" : "待批准"}`);
     console.log(`关闭恢复监听：${payload.watcher.available ? "可用" : "受限"}`);
+    console.log(
+      `自动增量翻译：${payload.autoTranslateUpdates ? "已开启" : "已关闭"}；后台清单监听${
+        payload.catalog.watcherActive ? "运行中" : "未启动"
+      }`,
+    );
+    if (payload.catalog.lastRunAt) {
+      console.log(
+        `上次清单同步：${payload.catalog.lastRunAt}（${
+          payload.catalog.lastReason || "未知"
+        }，插件 ${payload.catalog.plugins ?? "?"}，待翻译 ${
+          payload.catalog.pending ?? "?"
+        }）`,
+      );
+    }
     console.log(
       `插件与字段：${payload.sync.localPlugins} / ${
         payload.sync.alreadyChineseFields + payload.sync.pending

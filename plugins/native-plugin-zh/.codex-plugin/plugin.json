@@ -1,7 +1,7 @@
 {
   "name": "native-plugin-zh",
-  "version": "1.5.0",
-  "description": "Windows 版 Codex 原生插件界面中文化：启用写入中文，关闭恢复英文，并通过无控制台窗口的独立助手自动重启 Codex。",
+  "version": "1.6.0",
+  "description": "Windows 版 Codex 原生插件界面中文化：启用写入中文，关闭恢复英文，Codex/插件更新或新装插件后自动增量翻译，并通过无控制台窗口的独立助手自动重启 Codex。",
   "author": {
     "name": "kinlaite"
   },
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "原生插件中文化",
     "shortDescription": "直接替换 Codex 插件界面的英文介绍",
-    "longDescription": "通过可恢复的本地清单覆盖层，把 Codex 原生插件市场、已安装列表和详情页中的英文名称、简介与详细说明替换为简体中文。翻译按插件 ID、字段和源文本哈希缓存；所有写操作使用系统级互斥，进程异常退出后由系统自动释放锁。插件启用并重启 Codex 后由 SessionStart 或 MCP 写入中文；插件关闭并重启 Codex 后，由配套的“恢复守护”插件在 SessionStart 恢复英文。不使用计划任务、常驻进程、稳定运行目录或修改 Codex 本体。首次启用需批准 hooks，插件更新后 Codex 可能再次要求批准。",
+    "longDescription": "通过可恢复的本地清单覆盖层，把 Codex 原生插件市场、已安装列表和详情页中的英文名称、简介与详细说明替换为简体中文。翻译按插件 ID、字段和源文本哈希缓存；所有写操作使用系统级互斥，进程异常退出后由系统自动释放锁。插件启用并重启 Codex 后由 SessionStart 或 MCP 写入中文；后台监听本地插件清单，Codex 更新、目标插件更新或新装本地插件后只翻译新增和英文变化的字段。插件关闭并重启 Codex 后，由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。不使用计划任务、常驻进程、稳定运行目录或修改 Codex 本体。首次启用需批准 hooks，插件更新后 Codex 可能再次要求批准。",
     "developerName": "kinlaite",
     "category": "Productivity",
     "capabilities": [

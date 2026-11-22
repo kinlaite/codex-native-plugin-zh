@@ -6,7 +6,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-export const APP_VERSION = "1.5.0";
+export const APP_VERSION = "1.6.0";
 export const APP_ID = "native-plugin-zh";
 export const LOCALE = "zh-CN";
 export const PLUGIN_ID = "native-plugin-zh@native-plugin-zh-local";
@@ -25,6 +25,7 @@ export const DATA_DIR = path.resolve(
 export const STATE_FILE = path.join(DATA_DIR, "state.json");
 export const PACK_FILE = path.join(DATA_DIR, "translations.zh-CN.json");
 export const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
+export const CATALOG_FILE = path.join(DATA_DIR, "catalog-state.json");
 export const CONFIG_FILE = path.join(CODEX_HOME, "config.toml");
 export const HISTORY_FILE = path.join(DATA_DIR, "history.jsonl");
 export const BACKUP_DIR = path.join(DATA_DIR, "backups");

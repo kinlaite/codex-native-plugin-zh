@@ -2,6 +2,12 @@ import readline from "node:readline";
 
 import { APP_VERSION, logLine } from "./lib/paths.mjs";
 import {
+  autoTranslatePending,
+  autoTranslateUpdatesEnabled,
+  catalogStatus,
+  startCatalogWatcher,
+} from "./lib/catalog.mjs";
+import {
   bootstrap,
   diagnose,
   purgeDataAfterRestore,
@@ -22,7 +28,7 @@ const TOOLS = [
     name: "native_zh_status",
     title: "查看原生插件中文化状态",
     description:
-      "查看 Codex 原生插件中文覆盖是否启用、待写入字段、待翻译字段和上次同步结果。",
+      "查看 Codex 原生插件中文覆盖是否启用、待写入字段、待翻译字段、自动增量翻译和后台清单监听状态。",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
     annotations: {
       readOnlyHint: true,
@@ -61,7 +67,7 @@ const TOOLS = [
     name: "native_zh_sync",
     title: "同步原生插件中文",
     description:
-      "重新发现本地插件来源并同步中文。英文未变的字段复用缓存，只翻译新增或变化字段。",
+      "立即重新发现本地插件来源并同步中文。英文未变的字段复用缓存，只翻译新增或变化字段；日常更新通常已由后台自动完成。",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -135,7 +141,7 @@ const TOOLS = [
     name: "native_zh_diagnose",
     title: "诊断插件生命周期",
     description:
-      "检查 Codex 插件开关、中文覆盖、恢复 MCP、hooks 信任记录、Codex/Node 定位和同步错误。",
+      "检查 Codex 插件开关、中文覆盖、自动增量翻译、后台清单监听、恢复 MCP、hooks 信任记录、Codex/Node 定位和同步错误。",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
     annotations: {
       readOnlyHint: false,
@@ -148,6 +154,7 @@ const TOOLS = [
 
 const toolMap = new Map(TOOLS.map((tool) => [tool.name, tool]));
 let bootstrapPromise = null;
+let catalogStarted = false;
 
 export function startBootstrap() {
   bootstrapPromise ??= bootstrap()
@@ -168,6 +175,60 @@ export function startBootstrap() {
 
 async function waitForBootstrap() {
   return startBootstrap();
+}
+
+function startCatalogBackground(boot) {
+  if (catalogStarted || process.env.CODEX_PLUGIN_ZH_DISABLE_BOOTSTRAP === "1") return;
+  catalogStarted = true;
+
+  void startCatalogWatcher().catch((error) => {
+    logLine(`catalog: 启动监听失败：${error.stack || error.message}`);
+  });
+
+  if (!autoTranslateUpdatesEnabled()) {
+    logLine("catalog: 自动增量翻译已在 settings.json 中关闭");
+    return;
+  }
+  const disabledForIntent =
+    boot?.config?.enabled === false ||
+    (boot?.lifecycle?.action === "skip" && boot?.lifecycle?.reason === "intent-disabled");
+  if (disabledForIntent) return;
+
+  // 每次启动都做一次后台扫描：bootstrap 与监听器基线之间若恰好新增插件，
+  // 也能靠这次扫描补上；没有待翻译字段时只扫描、不调用模型。
+  const runStartupTranslation = (attempt) => {
+    void autoTranslatePending({ reason: "startup-pending", lockWaitMs: 15000 })
+      .then((result) => {
+        if (
+          result?.skipped &&
+          result.disabled !== true &&
+          result.reason !== "disabled-by-settings" &&
+          attempt < 3
+        ) {
+          logLine(
+            `catalog startup-pending: 跳过（${result.reason || "locked"}），稍后重试`,
+          );
+          scheduleStartupTranslation(attempt + 1, attempt * 30000);
+          return;
+        }
+        logLine(
+          result?.skipped
+            ? `catalog startup-pending: 跳过（${result.reason || "locked"}）`
+            : `catalog startup-pending: applied=${result?.appliedFields || 0} translated=${
+                result?.translation?.translated || 0
+              } pending=${result?.pending?.length || 0}`,
+        );
+      })
+      .catch((error) => {
+        logLine(`catalog startup-pending 失败：${error.stack || error.message}`);
+        if (attempt < 3) scheduleStartupTranslation(attempt + 1, attempt * 30000);
+      });
+  };
+  const scheduleStartupTranslation = (attempt, delay) => {
+    const timer = setTimeout(() => runStartupTranslation(attempt), delay);
+    timer.unref?.();
+  };
+  scheduleStartupTranslation(1, 1800);
 }
 
 function pendingPreview(summary) {
@@ -253,6 +314,7 @@ async function handleRestore(args = {}) {
 async function handleStatus() {
   await waitForBootstrap();
   const result = await status({ json: false, quiet: true });
+  const catalog = catalogStatus();
   return {
     content: [
       {
@@ -263,6 +325,10 @@ async function handleStatus() {
           result.localPlugins
         }，待写入 ${result.plannedFields} 字段，待翻译 ${result.pending.length}，跳过中文源 ${
           result.alreadyChineseFields
+        }；自动增量翻译${
+          result.autoTranslateUpdates ? "已开启" : "已关闭"
+        }，后台清单监听${
+          catalog.watcherActive ? "运行中" : "未启动"
         }。关闭插件后由运行中的服务器自动恢复英文，重启 Codex 即可生效。`,
       },
     ],
@@ -362,7 +428,7 @@ async function dispatch(message) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: SERVER_NAME, version: APP_VERSION },
         instructions:
-          "维护 Windows 版 Codex 原生插件 UI 的中文清单覆盖层，单插件自闭环：插件启用后由 hooks 或 MCP 写入中文；插件关闭后由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。切换开关可自动重启 Codex，WMI 重启助手独立运行且不显示控制台窗口。不安装计划任务或独立外部服务，不修改 Codex 本体。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
+          "维护 Windows 版 Codex 原生插件 UI 的中文清单覆盖层，单插件自闭环：插件启用后由 hooks 或 MCP 写入中文；后台监听本地插件清单，Codex 更新、目标插件更新或新装本地插件后只翻译新增和英文变化的字段；插件关闭后由运行中的监听器和 config.toml 注册的用户级恢复 MCP 恢复英文。切换开关可自动重启 Codex，WMI 重启助手独立运行且不显示控制台窗口。不安装计划任务或独立外部服务，不修改 Codex 本体。优先使用 native_zh_diagnose、native_zh_apply 和 native_zh_sync。",
       });
       return;
     }
@@ -422,10 +488,11 @@ async function shutdownLastChance(trigger) {
 function main() {
   // 先让 bootstrap 完成一次 reconcile 再启动监听器：启动期间若已发生切换，
   // 监听器会通过 last-switch.json 检测到，并且不会和 bootstrap 争抢同步锁。
-  void startBootstrap().finally(() => {
+  void startBootstrap().then((boot) => {
     // 与用户级恢复服务器各有一个监听器：两者看到同一次切换时，restart.mjs
     // 会按开关状态签名去重，只重启一次。插件进程被硬杀时由恢复服务器兜底。
     startConfigWatcher({ autoRestart: true });
+    startCatalogBackground(boot);
   });
   const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
   input.on("line", (line) => {
