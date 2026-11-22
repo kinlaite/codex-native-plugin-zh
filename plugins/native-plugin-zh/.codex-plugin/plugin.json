@@ -1,6 +1,6 @@
 {
   "name": "native-plugin-zh",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Windows 版 Codex 原生插件界面中文化：启用写入中文，关闭恢复英文，Codex/插件更新或新装插件后自动增量翻译，并通过无控制台窗口的独立助手自动重启 Codex。",
   "author": {
     "name": "kinlaite"

@@ -63,13 +63,17 @@ export async function catalogFingerprint({ allowAppServer = false, allowCli = fa
   });
   const entries = discovered.plugins
     .map((plugin) => {
-      let stat = null;
+      let stat = plugin.manifestStat || null;
       let manifestHash = null;
-      try {
-        const info = fs.statSync(plugin.manifestPath);
-        stat = { mtimeMs: Math.round(info.mtimeMs), size: info.size };
-        manifestHash = sha256(fs.readFileSync(plugin.manifestPath, "utf8"));
-      } catch {}
+      if (typeof plugin.manifestText === "string") {
+        manifestHash = sha256(plugin.manifestText);
+      } else {
+        try {
+          const info = fs.statSync(plugin.manifestPath);
+          stat = { mtimeMs: Math.round(info.mtimeMs), size: info.size };
+          manifestHash = sha256(fs.readFileSync(plugin.manifestPath, "utf8"));
+        } catch {}
+      }
       return {
         key: plugin.key,
         manifestPath: path.resolve(plugin.manifestPath),

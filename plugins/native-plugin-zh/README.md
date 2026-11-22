@@ -17,7 +17,7 @@
 
 ### 从 GitHub
 
-当前 `main` 发布版本为 **1.6.1**：
+当前 `main` 发布版本为 **1.6.2**：
 
 ```powershell
 codex plugin marketplace add kinlaite/codex-native-plugin-zh --ref main
@@ -74,6 +74,22 @@ codex plugin list --available --json
   "catalogDebounceMs": 2500
 }
 ```
+
+## 性能
+
+在 77 个本地/已安装插件的 Windows 实测环境（NTFS）中：
+
+- `catalogFingerprint()` 从平均 **37.2ms / p95 39.2ms** 降到 **18.2ms / p95 19.5ms**。
+- 文件系统 dry-run 同步从平均 **37.5ms** 降到 **20.5ms**。
+- 默认 15 秒轮询下，清单扫描约占单核 **0.12%**，且空闲轮询不会调用模型。
+
+主要优化：
+
+- 发现阶段读取的清单文本、mtime 和大小直接用于指纹与同步，避免同一轮重复 `stat`/读取清单。
+- marketplace 兜底递归扫描不再对每个目录调用 `realpathSync`，只对确实存在 `.agents` 的目录检查元数据。
+- 相同英文文案按源文本哈希去重，一次翻译后写入所有对应插件字段，减少重复的模型输入。
+
+真正的翻译耗时主要来自 `codex exec` 进程启动和用户当前配置的模型：本机翻译 3 个字段约 13–18 秒，插件本地处理只占几十毫秒。实测强制低推理等级在当前模型提供商上没有可测收益，因此不覆盖用户模型设置。插件数量增长时扫描开销近似线性；插件很多或希望进一步降低后台占用时，可把 `catalogPollMs` 调到 `30000` 或更高。
 
 ## 数据与隐私
 

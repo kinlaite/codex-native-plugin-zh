@@ -1,6 +1,6 @@
 {
   "name": "codex-native-plugin-zh-runtime",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "private": true,
   "type": "module",
   "description": "Windows-only reversible localization for the native Codex plugin UI.",

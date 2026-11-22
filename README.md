@@ -1,6 +1,6 @@
 # 原生插件中文化 Marketplace
 
-这是 `native-plugin-zh` 的 Codex marketplace 发布目录，当前插件版本 **1.6.1**。
+这是 `native-plugin-zh` 的 Codex marketplace 发布目录，当前插件版本 **1.6.2**。
 
 插件启用后会监听本地 marketplace 源和 Git 插件的已安装缓存：Codex 更新、目标插件更新或新装本地/Git 插件后，只自动翻译新增和英文变化的名称、简介与详细说明；英文未变的字段复用缓存。
 

@@ -244,7 +244,7 @@ export async function syncInstalled({
 
   for (const plugin of plugins) {
     try {
-      const manifest = readManifest(plugin.manifestPath);
+      const manifest = plugin.manifest || readManifest(plugin.manifestPath);
       let entry = state.plugins[plugin.key];
       let pathChanged = false;
       if (!entry) {
@@ -590,6 +590,30 @@ async function translateBatchWithCodex(batch) {
     items = Object.entries(parsed.translations).map(([id, text]) => ({ id, text }));
   } else if (Array.isArray(parsed?.items)) items = parsed.items;
 
+  const pack = loadPack();
+  const applied = applyTranslatedItems(pack, batch, items);
+  savePack(pack);
+  if (!applied.translated) {
+    writeJsonAtomic(path.join(path.dirname(PACK_FILE), "translation-debug.json"), {
+      savedAt: nowIso(),
+      parsed,
+      stdout: result.stdout.slice(-8000),
+      stderr: result.stderr.slice(-8000),
+      expectedIds: batch.flatMap((group) =>
+        (group.aliases || [group]).map((item) => item.id)
+      ),
+    });
+  }
+  try {
+    fs.unlinkSync(outputFile);
+  } catch {}
+  logLine(
+    `Codex 翻译完成 ${applied.translated}/${applied.translated + applied.failed}（唯一文本 ${batch.length}）`,
+  );
+  return { ...applied, unique: batch.length };
+}
+
+export function applyTranslatedItems(pack, batch, items) {
   const byId = new Map(
     items
       .filter((item) => isObject(item) && stringValue(item.id))
@@ -600,35 +624,29 @@ async function translateBatchWithCodex(batch) {
       .filter(([, text]) => text),
   );
 
-  const pack = loadPack();
   let translated = 0;
-  for (const item of batch) {
-    const text = byId.get(item.id);
-    if (!text) continue;
-    if (!pack.plugins[item.key]) pack.plugins[item.key] = {};
-    pack.plugins[item.key][item.field] = {
-      sourceHash: item.sourceHash,
-      text,
-      origin: "codex",
-      updatedAt: nowIso(),
-    };
-    translated += 1;
+  let failed = 0;
+  for (const group of batch) {
+    const text = byId.get(group.id);
+    const aliases = Array.isArray(group.aliases) && group.aliases.length
+      ? group.aliases
+      : [group];
+    for (const item of aliases) {
+      if (!text) {
+        failed += 1;
+        continue;
+      }
+      if (!pack.plugins[item.key]) pack.plugins[item.key] = {};
+      pack.plugins[item.key][item.field] = {
+        sourceHash: item.sourceHash,
+        text,
+        origin: "codex",
+        updatedAt: nowIso(),
+      };
+      translated += 1;
+    }
   }
-  savePack(pack);
-  if (!translated) {
-    writeJsonAtomic(path.join(path.dirname(PACK_FILE), "translation-debug.json"), {
-      savedAt: nowIso(),
-      parsed,
-      stdout: result.stdout.slice(-8000),
-      stderr: result.stderr.slice(-8000),
-      expectedIds: batch.map((item) => item.id),
-    });
-  }
-  try {
-    fs.unlinkSync(outputFile);
-  } catch {}
-  logLine(`Codex 翻译完成 ${translated}/${batch.length}`);
-  return { translated, failed: batch.length - translated };
+  return { translated, failed };
 }
 
 function chunkTranslationItems(items) {
@@ -649,12 +667,24 @@ function chunkTranslationItems(items) {
   return chunks;
 }
 
-async function translateWithCodex(items) {
+export function groupTranslationItems(items) {
   const unique = new Map();
   for (const item of items) {
-    if (item.source.trim() && !hasHan(item.source)) unique.set(item.id, item);
+    if (!item.source.trim() || hasHan(item.source)) continue;
+    const key = `${item.sourceHash || sha256(item.source)}\0${item.source}`;
+    let group = unique.get(key);
+    if (!group) {
+      group = { ...item, aliases: [] };
+      unique.set(key, group);
+    }
+    group.aliases.push(item);
   }
-  const batches = chunkTranslationItems([...unique.values()]);
+  return [...unique.values()];
+}
+
+async function translateWithCodex(items) {
+  const unique = groupTranslationItems(items);
+  const batches = chunkTranslationItems(unique);
   let translated = 0;
   let failed = 0;
   for (const batch of batches) {
@@ -663,12 +693,21 @@ async function translateWithCodex(items) {
       translated += result.translated;
       failed += result.failed;
     } catch (error) {
-      failed += batch.length;
+      failed += batch.reduce(
+        (sum, group) => sum + (group.aliases?.length || 1),
+        0,
+      );
       logLine(`翻译批次失败：${error.message}`);
       break;
     }
   }
-  return { translated, failed, attempted: unique.size };
+  return {
+    translated,
+    failed,
+    attempted: items.length,
+    unique: unique.length,
+    deduped: items.length - unique.length,
+  };
 }
 
 function translationBackoffActive() {

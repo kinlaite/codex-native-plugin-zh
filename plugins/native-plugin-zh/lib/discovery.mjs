@@ -13,7 +13,7 @@ import {
   resolveCodexCommand,
   stringValue,
 } from "./paths.mjs";
-import { manifestPathFor } from "./storage.mjs";
+import { manifestPathFor, readManifest } from "./storage.mjs";
 
 function runCodexCliJson(args, timeout = 30000) {
   const result = spawnSync(resolveCodexCommand(), args, {
@@ -187,23 +187,20 @@ function findMarketplaceMetadataRoots(base, maxDepth) {
 
   function walk(directory, depth) {
     if (depth > maxDepth) return;
-    let real;
-    try {
-      real = fs.realpathSync(directory);
-    } catch {
-      return;
-    }
-    if (seen.has(real)) return;
-    seen.add(real);
-
-    const metadata = path.join(directory, ".agents", "plugins", "marketplace.json");
-    if (fs.existsSync(metadata)) roots.push(directory);
-
+    const identity = path.resolve(directory).toLowerCase();
+    if (seen.has(identity)) return;
+    seen.add(identity);
     let entries = [];
     try {
       entries = fs.readdirSync(directory, { withFileTypes: true });
     } catch {
       return;
+    }
+    if (entries.some((entry) => entry.isDirectory() && entry.name === ".agents")) {
+      const metadata = path.join(directory, ".agents", "plugins", "marketplace.json");
+      try {
+        if (fs.statSync(metadata).isFile()) roots.push(directory);
+      } catch {}
     }
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
@@ -323,6 +320,32 @@ function candidatePluginDirectories(root) {
   return [...candidates.values()];
 }
 
+function readManifestSnapshot(manifestPath) {
+  const info = fs.statSync(manifestPath);
+  const manifest = readManifest(manifestPath);
+  return {
+    manifest,
+    manifestText: manifest.text,
+    manifestStat: { mtimeMs: Math.round(info.mtimeMs), size: info.size },
+  };
+}
+
+function readManifestForSource(sourcePath) {
+  for (const relative of [
+    path.join(".codex-plugin", "plugin.json"),
+    "plugin.json",
+  ]) {
+    const manifestPath = path.join(sourcePath, relative);
+    try {
+      return { manifestPath, ...readManifestSnapshot(manifestPath) };
+    } catch (error) {
+      if (error?.code === "ENOENT") continue;
+      throw error;
+    }
+  }
+  return null;
+}
+
 function scanMarketplaceRoots(installedKeys, options = {}) {
   const found = [];
   const errors = [];
@@ -330,10 +353,10 @@ function scanMarketplaceRoots(installedKeys, options = {}) {
     if (!fs.existsSync(root)) continue;
     for (const candidate of candidatePluginDirectories(root)) {
       try {
-        const manifestPath = manifestPathFor(candidate.directory);
-        if (!manifestPath) continue;
-        const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-        const pluginName = stringValue(manifest.name) || candidate.fallbackName;
+        const snapshot = readManifestForSource(candidate.directory);
+        if (!snapshot) continue;
+        const { manifestPath } = snapshot;
+        const pluginName = stringValue(snapshot.manifest.obj.name) || candidate.fallbackName;
         if (!pluginName) continue;
         const key = pluginKey(name, pluginName);
         found.push({
@@ -342,8 +365,9 @@ function scanMarketplaceRoots(installedKeys, options = {}) {
           pluginName,
           sourcePath: candidate.directory,
           manifestPath,
-          version: stringValue(manifest.version) || null,
+          version: stringValue(snapshot.manifest.obj.version) || null,
           installed: installedKeys.has(key),
+          ...snapshot,
         });
       } catch (error) {
         errors.push({ key: `${name}/${candidate.fallbackName || "?"}`, message: error.message });
@@ -389,24 +413,23 @@ function scanInstalledCacheRoots(installedPlugins, { includeAll = false } = {}) 
 
         for (const candidate of candidates) {
           try {
-            const manifestPath = manifestPathFor(candidate);
-            if (!manifestPath) continue;
-            const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+            const snapshot = readManifestForSource(candidate);
+            if (!snapshot) continue;
+            const { manifestPath } = snapshot;
             const pluginName =
-              stringValue(manifest.name) || pluginEntry.name;
+              stringValue(snapshot.manifest.obj.name) || pluginEntry.name;
             if (!pluginName) continue;
             const key = pluginKey(marketplace, pluginName);
             const installed = installedPlugins.get(key) || null;
             if (!includeAll && !installed) continue;
-            const manifestStat = fs.statSync(manifestPath);
-            const version = stringValue(manifest.version) || null;
+            const version = stringValue(snapshot.manifest.obj.version) || null;
             const versionMatch =
               !!installed?.version &&
               (installed.version === version ||
                 installed.version === path.basename(candidate));
             const score = {
               versionMatch: versionMatch ? 1 : 0,
-              mtimeMs: Math.round(manifestStat.mtimeMs),
+              mtimeMs: snapshot.manifestStat.mtimeMs,
             };
             const previous = byKey.get(key);
             if (
@@ -427,6 +450,7 @@ function scanInstalledCacheRoots(installedPlugins, { includeAll = false } = {}) 
                 manifestPath,
                 version,
                 installed: true,
+                ...snapshot,
               },
             });
           } catch (error) {
@@ -518,7 +542,17 @@ export async function discoverLocalPlugins({
     const previous = byKey.get(plugin.key);
     if (previous) {
       previous.installed = previous.installed || plugin.installed;
-      if (!previous.manifestPath && plugin.manifestPath) Object.assign(previous, plugin);
+      if (
+        previous.manifestPath &&
+        path.resolve(previous.manifestPath).toLowerCase() ===
+          path.resolve(plugin.manifestPath).toLowerCase()
+      ) {
+        previous.manifest ??= plugin.manifest;
+        previous.manifestText ??= plugin.manifestText;
+        previous.manifestStat ??= plugin.manifestStat;
+      } else if (!previous.manifestPath && plugin.manifestPath) {
+        Object.assign(previous, plugin);
+      }
       continue;
     }
     if (scope === "installed-only" && !plugin.installed) continue;

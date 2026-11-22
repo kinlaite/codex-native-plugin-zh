@@ -33,7 +33,7 @@ description: Use when the user wants Chinese names and descriptions directly ins
 
 - 不安装计划任务，不依赖外部同步器或其他插件。恢复服务器是 `config.toml` 中的用户级 MCP 服务器，由 Codex 自己拉起；自包含脚本放在 `~/.codex/plugin-i18n-native/bin`，不随插件版本目录变化。
 - 仅支持 Windows 10/11 的 Codex 桌面版；自动重启依赖 WMI，降级仍使用隐藏窗口。
-- 安装前确认 marketplace 中显示版本 `1.6.1` 或更高；远程仓库落后时使用本地 marketplace 安装。
+- 安装前确认 marketplace 中显示版本 `1.6.2` 或更高；远程仓库落后时使用本地 marketplace 安装。
 - 不把 `SessionEnd` 当成唯一恢复机制：监听器（MCP 进程内）和进程回收前的最后检查才是主要恢复路径，`SessionEnd` 只是兜底。
 - 升级启动时自动清理旧版计划任务、`tool` 目录、`task.xml` 和相关设置字段。
 - 只通过 MCP 工具或插件自带 CLI 操作，不手动改 `app.asar`、WindowsApps 安装目录或 `~/.codex/plugins/cache`；Git 插件缓存由插件按备份和源哈希流程自动维护。
